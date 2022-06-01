@@ -1,0 +1,36 @@
+# mids_w207_music_genre/reference_material
+A collection of useful reference material for the project.
+
+**2002-07 Music Genre Classification of Audio Signals**
+
+G. Tzanetakis and P. Cook, "Musical genre classification of audio
+signals," in IEEE Transactions on Speech and Audio Processing,
+vol. 10, no. 5, pp. 293-302, July 2002, doi: 10.1109/TSA.2002.800560.
+
+Abstract—Musical genres are categorical labels created by humans to
+characterize pieces of music. A musical genre is characterized by the
+common characteristics shared by its members.
+
+These characteristics typically are related to the instrumentation,
+rhythmic structure, and harmonic content of the music. Genre
+hierarchies are commonly used to structure the large collections of
+music available on the Web. Currently musical genre annotation is
+performed manually. Automatic musical genre classification can assist
+or replace the human user in this process and would be a valuable
+addition to music information retrieval systems. In addition,
+automatic musical genre classification provides a framework for
+developing and evaluating features for any type of content- based
+analysis of musical signals.
+
+In this paper, the automatic classification of audio signals into an
+hierarchy of musical genres is explored. More specifically, three
+feature sets for representing timbral texture, rhythmic content and
+pitch content are proposed.
+
+The performance and relative importance of the proposed features is
+investigated by training statistical pattern recognition classifiers
+using real-world audio collections. Both whole file and real-time
+frame-based classification schemes are described. Using the proposed
+feature sets, classification of 61% for ten musical genres is
+achieved. This result is comparable to results reported for human
+musical genre classification.
