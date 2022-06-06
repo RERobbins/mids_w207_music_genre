@@ -130,3 +130,5 @@ dmypy.json
 
 # DS_Store
 **/.DS_Store
+
+acousticbrainz_all_flattened_labeled.pickle*.bz2
