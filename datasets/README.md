@@ -7,6 +7,10 @@ Description of sample folders:
  - `melspecs_npy` contains sample mel-spectrograms in `npy` format. All mel-spectrograms can be downloaded from [Google Drive](https://drive.google.com/drive/folders/12GxtZGke_7-M0piXF_NMvxNZnvi6qMnR?usp=sharing)
 
 
+If you would like to download all the raw files, please refer to [this notebook](https://github.com/RERobbins/mids_w207_music_genre/blob/main/member_workspaces/lawrence/download.ipynb).
+
+If you would like to preprocessing all the downloaded raw files, please refer to [this notebook](https://github.com/RERobbins/mids_w207_music_genre/blob/main/member_workspaces/lawrence/preprocess.ipynb).
+
 ## Aggregated and flattened dataset
 
 The aggregated and flattened dataset can be downloaded from [Google Drive](https://drive.google.com/file/d/16DJpJiOIrEGKtOy-fE95jiaZIMZCxHmf/view?usp=sharing). This dataset is in a `.pickle.bz2` format, which can be imported into a DataFrame using `pd.read_pickle()` function from the `pandas` library.
