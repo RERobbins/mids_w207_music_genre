@@ -9,7 +9,7 @@ class ReadFilesIntoDataframe():
     def __init__(self):
         pass
 
-    def files_to_dataframe(self, filenames = None):
+    def pickle_files_to_dataframe(self, filenames = None):
         if type(filenames) != list:
             raise ValueError('Please provide an array of files and their path')
 
@@ -34,4 +34,4 @@ class ReadFilesIntoDataframe():
         files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
         files = [os.path.join(folder, f) for f in files if re.search('mtg_jamendo_genre_features_part_[0-9]+\.pickle\.bz2$', f)]
 
-        return self.files_to_dataframe(files)
+        return self.pickle_files_to_dataframe(files)
