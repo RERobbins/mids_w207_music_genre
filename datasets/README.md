@@ -1,0 +1,27 @@
+# MTG-Jamendo dataset
+
+## Sample raw files from dataset
+
+Description of sample folders:
+ - `acousticbrainz_json` contains sample acousticbrainz features in `json` format. All acousticbrainz features can be downloaded from [Google Drive](https://drive.google.com/drive/folders/1yxwbgq4LXrTfNImyr3cM7nK5AprjR6Hf?usp=sharing)
+ - `melspecs_npy` contains sample mel-spectrograms in `npy` format. All mel-spectrograms can be downloaded from [Google Drive](https://drive.google.com/drive/folders/12GxtZGke_7-M0piXF_NMvxNZnvi6qMnR?usp=sharing)
+
+
+## Aggregated and flattened dataset
+
+The aggregated and flattened dataset can be downloaded from [Google Drive](https://drive.google.com/file/d/16DJpJiOIrEGKtOy-fE95jiaZIMZCxHmf/view?usp=sharing). This dataset is in a `.pickle.bz2` format, which can be imported into a DataFrame using `pd.read_pickle()` function from the `pandas` library.
+
+The prefixed columns are ordered in the following manner:
+ - Metadata (e.g. `album_id`, `artist_id`, `duration`)
+ - Audio properties (e.g. `bitrate`, `codec`, `lossless`)
+ - Tags (e.g. `album`, `albumartist`)
+ - Genre (e.g. `rock`, `pop`, `classical`)
+ - Version (e.g. `essentia`, `git_version`)
+
+The remaining columns are features provided by AcousticBrainz. 
+
+Please note that the column `rhythm_beats_position` is not flattened because the dimension of the arrays are different across tracks. The values in this column are kept as 1d arrays.
+
+For more information on the features included in this dataset, refer to [the original repo](https://github.com/MTG/mtg-jamendo-dataset#readme).
+
+A draft data dictionary can be found [here](https://docs.google.com/spreadsheets/d/1lTTJoC7Jg2_InKtu1POj-2y0YOgznqRFhMIIk5iYJ4A/edit#gid=0&range=A1).
