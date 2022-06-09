@@ -4,7 +4,7 @@ import pandas as pd
 from helpers.stitch import ReadFilesIntoDataframe
 
 
-def load_and_distill(multi_label=False):
+def load_and_distill(multi_label=False, tags=True):
 
     data = ReadFilesIntoDataframe().read_mtg_jamendo_files()
 
@@ -28,7 +28,10 @@ def load_and_distill(multi_label=False):
     discard_columns = [
         column
         for column in result.columns
-        if ("genre" in column and column not in labels)
+        if (
+            (column.startswith("genre") and column not in labels)
+            or (not tags and column.startswith("tag"))
+        )
     ]
     result.drop(discard_columns, axis=1, inplace=True)
     return result
