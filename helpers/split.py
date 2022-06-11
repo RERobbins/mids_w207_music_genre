@@ -60,4 +60,4 @@ def label_strings(one_hot_encoded_labels):
         is suitable for use with sklearn.preprocessing.LabelBinarizer.
     """
     
-    return one_hot_encoded_labels.idxmax(axis='columns').to_frame(name='labels')
+    return one_hot_encoded_labels.idxmax(axis='columns').to_frame(name='label')
