@@ -11,9 +11,9 @@ If you would like to download all the raw files, please refer to [this notebook]
 
 If you would like to preprocessing all the downloaded raw files, please refer to [this notebook](https://github.com/RERobbins/mids_w207_music_genre/blob/main/member_workspaces/lawrence/preprocess.ipynb).
 
-## Aggregated and flattened dataset
+## Reference dataset
 
-The preprocessed dataset can be downloaded from [Google Drive](https://drive.google.com/file/d/16DJpJiOIrEGKtOy-fE95jiaZIMZCxHmf/view?usp=sharing). This dataset is in a `.pickle.bz2` format, which can be imported into a DataFrame using `pd.read_pickle()` function from the `pandas` library.
+The reference dataset can be found in `/datasets/mtg_jamendo` folder.
 
 The prefixed columns are ordered in the following manner:
  - Metadata (e.g. `album_id`, `artist_id`, `duration`)
