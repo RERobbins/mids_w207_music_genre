@@ -3,10 +3,29 @@ import sys
 import numpy as np
 import pandas as pd
 
-from helpers.reduce import load_and_distill
-
 
 def tag_label_feature_split(df):
+    """
+    Returns the tags, labels and features from an MTG_Jamendo working dataset.
+    
+    A working MTG_Jamendo dataset contains three clusters of fields.  Metadata tags are 
+    reflected in columns with names starting with "tag", labels are reflected in columns
+    with names starting with "genre", and features are contained in all other columns.
+
+    This function takes an MTG_Jamendo dataset and splits it into three pandas DataFrames, for
+    the tags, labels and features present in the dataset, respectively.
+
+    Parameters
+    ----------
+    df: pandas DataFrame
+        A working MTG_Jamendo dataset, typically created by helpers.reduce.load_and_distill().
+
+    Returns
+    -------
+    three pandas DataFrames
+        tag DataFrame, label DataFrame, features DataFrame    
+    """
+
     tags = []
     labels = []
     features = []
@@ -20,3 +39,25 @@ def tag_label_feature_split(df):
             features.append(name)
 
     return df[tags].copy(), df[labels].copy(), df[features].copy()
+
+
+def label_strings(one_hot_encoded_labels):
+    """
+    Returns a one column dataframe consisting of the label strings corresponding to
+    the one hot enoded labels passed to the function.
+    
+    Parameters
+    ----------
+    one_hot_encoded_labels: pandas Dataframe
+        A pandas DataFrame of one hot encoded labels such as the labels returned by
+        tag_label_feature_split().
+        
+    Returns
+    -------
+    pandas DataFrame
+        A one column pandas DataFrame with the labels strings corresponding to
+        the one hot encoded labels passed to the function.  The returned object
+        is suitable for use with sklearn.preprocessing.LabelBinarizer.
+    """
+    
+    return one_hot_encoded_labels.idxmax(axis='columns').to_frame(name='label')
