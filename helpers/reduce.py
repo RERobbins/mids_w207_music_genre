@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import re
 
 from helpers.stitch import ReadFilesIntoDataframe
 from helpers.constants import BASE_GENRES, BASE_FEATURES
@@ -27,12 +28,13 @@ def load_and_distill(
         label paramters, otherwise only tracks associated with a single label but not more 
         than one will be included.  The default is False.
 
-    features: a list of strings
+    features: 'all' or a list of strings
         The features to be included for each track, the default is helpers.constants.BASE_FEATURES.
+        If the parameter is 'all', then all features will be included.
 
     tags: 'all' or a list of strings
         The tags to be included for each track.  If the paramter is the empty list (the default), 
-        tags will not be included.  If the paramter is 'all', all tags will be included.
+        tags will not be included.  If the paramter is 'all', then all tags will be included.
 
     pickle: a string
         If a string is supplied, it will be used as the name of the pickle file for the result.  
@@ -53,7 +55,12 @@ def load_and_distill(
         result = data.drop(data[data[labels].sum(axis=1) != 1].index)
 
     if tags == "all":
-        tags = result.columns[result.columns.str.startswith("tag")].tolist()
+        tags = [column for column in result.columns if column.startswith("tag")]
+
+    if features == "all":
+        features = [
+            column for column in result.columns if not re.match("tag|genre", column)
+        ]
 
     result = result[tags + features + labels]
 
