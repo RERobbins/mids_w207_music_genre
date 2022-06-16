@@ -212,3 +212,16 @@ BASE_FEATURES_2 = [
     "mfcc_cov_12_11",
     "mfcc_cov_12_12",
 ]
+
+P_VAL_TOP_TEN = [
+    'spectral_kurtosis_median',
+    'spectral_contrast_valleys_max_5',
+    'spectral_skewness_mean',
+    'spectral_entropy_dmean',
+    'spectral_contrast_valleys_dmean_4',
+    'spectral_skewness_median',
+    'lowlevel_average_loudness',
+    'spectral_kurtosis_mean',
+    'spectral_entropy_dmean2',
+    'hpcp_max_11'
+]
