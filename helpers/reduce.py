@@ -7,7 +7,12 @@ from helpers.constants import BASE_GENRES, BASE_FEATURES
 
 
 def load_and_distill(
-    labels=BASE_GENRES, multi_label=False, features=BASE_FEATURES, tags=[], pickle=[]
+    data=None,
+    labels=BASE_GENRES,
+    multi_label=False,
+    features=BASE_FEATURES,
+    tags=[],
+    pickle=[],
 ):
 
     """
@@ -20,6 +25,8 @@ def load_and_distill(
 
     Parameters
     ----------
+    data: reference data, if not specified, use the sharded MTG_Jamendo reference data
+    
     labels: a list of strings
         The labels (genres) for included tracks, the default is helpers.constants.BASE_GENRES.
 
@@ -47,7 +54,8 @@ def load_and_distill(
         The DataFrame specified by the parameters.    
     """
 
-    data = ReadFilesIntoDataframe().read_mtg_jamendo_files()
+    if data is None:
+        data = ReadFilesIntoDataframe().read_mtg_jamendo_files()
 
     if multi_label:
         result = data.drop(data[data[labels].sum(axis=1) == 0].index)
