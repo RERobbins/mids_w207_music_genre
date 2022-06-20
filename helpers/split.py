@@ -2,9 +2,10 @@ import sys
 
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 
-def tag_label_feature_split(df):
+def tag_label_feature_split(df,label_format='one_hot'):
     """
     Returns the tags, labels and features from an MTG_Jamendo working dataset.
     
@@ -19,6 +20,13 @@ def tag_label_feature_split(df):
     ----------
     df: pandas DataFrame
         A working MTG_Jamendo dataset, typically created by helpers.reduce.load_and_distill().
+
+    label_format:
+        optionally specify "label_strings" to apply the label_strings fn to the one-hot labels,
+        returning a dense vector of lable strings instead
+      OR
+        optionally specify "encoded" to encode the one-hot labels to a dense vector of label
+        integers, and return as a tuple along with a label encoder object
 
     Returns
     -------
@@ -38,7 +46,15 @@ def tag_label_feature_split(df):
         else:
             features.append(name)
 
-    return df[tags].copy(), df[labels].copy(), df[features].copy()
+    labels = df[labels].copy();
+    if(label_format=='label_strings' or label_format=='encoded'):
+        labels = label_strings(labels)
+        if label_format=='encoded':
+            le = LabelEncoder()
+            labels = le.fit_transform(pd.Series.ravel(labels))
+            labels = (labels,le)
+
+    return df[tags].copy(), labels, df[features].copy()
 
 
 def label_strings(one_hot_encoded_labels):

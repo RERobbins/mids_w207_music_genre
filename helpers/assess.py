@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef
 from sklearn.utils.class_weight import compute_sample_weight
-
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 def make_confusion_matrix(
   y_true,
@@ -67,24 +68,25 @@ def make_confusion_matrix(
     plt.xlabel("Predicted Label")
     if title:
       plt.title(title)
+    plt.show()
 
   # return the 2D confusion matrix array
   return cm
 
-# resusable helper function to get a y_pred array from various polymorphisms
+# reusable helper function to get a y_pred array from various polymorphisms
 def resolve_y_pred(
   y_pred=None,
   model=None,
   x=None
 ):
-  if y_pred:
+  if y_pred is not None:
     return y_pred
   elif model and x is not None:
     return model.predict(x)
   else:
     raise Exception('Both a model and x (feature set) must be passed if a y_pred is not provided.')
 
-# resusable helper function to get a label_names array from various polymorphisms
+# reusable helper function to get a label_names array from various polymorphisms
 def resolve_label_names(
   y_true,
   y_pred,
@@ -100,8 +102,9 @@ def resolve_label_names(
     if model and model.classes_ is not None:
       unique_labels = list(model.classes_)
     else:
-      np.sort(np.unique(np.concatenate([y_true,y_pred])))
+      unique_labels = np.sort(np.unique(np.concatenate([y_true,y_pred])))
     if label_encoder:
+
       # convert label to friendly names if encoder is provided
       label_names = label_encoder.inverse_transform(unique_labels)
     else:
@@ -109,7 +112,7 @@ def resolve_label_names(
       label_names = [str(l) for l in unique_labels]
   return label_names
 
-# resusable helper function to get a sample_weight array from various polymorphisms
+# reusable helper function to get a sample_weight array from various polymorphisms
 def resolve_sample_weight(
   y_true,
   sample_weight=None,
@@ -120,18 +123,43 @@ def resolve_sample_weight(
     sample_weight = compute_sample_weight(class_weight="balanced", y=y_true)
   return sample_weight
 
+# reusable helper function to get an instance of a scaler from various polymorphisms
+def resolve_scaler(s):
+  if s == 'standard': # shortcut to initialize a stock StandardScaler
+    s = StandardScaler()
+  if isinstance(s,type): # if constructor is passed, create instance
+    s = s()
+  return s # (if none, or already initialized scaler, return "self"
 
 def make_classification_report(
   # same params as sklearn.metrics.classification_report
   y_true,
-  y_pred,
-  labels=None,
-  target_names=None,
+  y_pred=None, # optionally pass in precalculated y predictions
+  model=None, # optionally pass in a model (along with x) to autogenerate y_pred
+  x=None, # optionally pass in a feature set (along with model) to autogenerate y_pred
+  labels=None, # optionally pass a list of label (integers) to *only* include in the report
+  target_names=None, # optionally provide an explicit list of label names defining the label indexes
+  label_encoder=None, # optionally provide a label encoder for the to automatically get the label names
   sample_weight=None,
   digits=2,
   output_dict=False,
   zero_division="warn",
+  print_report=False,
 ):
+
+  # resolve polymorphisms / optional values
+  y_pred = resolve_y_pred(
+    y_pred=y_pred,
+    model=model,
+    x=x,
+  )
+  target_names = resolve_label_names(
+    y_true,
+    y_pred,
+    model=model,
+    label_names=target_names,
+    label_encoder=label_encoder,
+  )
 
   cr = classification_report(
     y_true,
@@ -185,8 +213,42 @@ def make_classification_report(
   # calculate padding necessary to align all rows
   paddings = {col:max([len(r.get(col,'')) for r in cr_arr])+2 for col in cols}
 
-  return "\n".join([
+  report_string = "\n".join([
       ''.join([
           r.get(c,'').rjust(paddings[c],' ')
        for c in cols]) 
   for r in cr_arr])
+
+  if print_report:
+    print(report_string)
+
+  return report_string
+
+# extending the sklearn make_train_test_split to optionally perform X scaling automatically
+def make_train_test_split(
+  X,
+  y,
+  test_size=None,
+  train_size=None,
+  random_state=None,
+  shuffle=True,
+  stratify=None,
+  x_scaler=None # optionally pass sklearn scaler to fit to train data, then apply to train and test data
+):
+  X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=test_size,
+    train_size=train_size,
+    random_state=random_state,
+    shuffle=shuffle,
+    stratify=stratify,
+  )
+
+  # apply scaler to X data if provided
+  x_scaler = resolve_scaler(x_scaler)
+  if(x_scaler):
+    X_train = x_scaler.fit_transform(X_train)
+    X_test = x_scaler.transform(X_test)
+
+  return X_train, X_test, y_train, y_test
