@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef
 from sklearn.utils.class_weight import compute_sample_weight
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 
 def make_confusion_matrix(
   y_true,
@@ -123,14 +121,6 @@ def resolve_sample_weight(
     sample_weight = compute_sample_weight(class_weight="balanced", y=y_true)
   return sample_weight
 
-# reusable helper function to get an instance of a scaler from various polymorphisms
-def resolve_scaler(s):
-  if s == 'standard': # shortcut to initialize a stock StandardScaler
-    s = StandardScaler()
-  if isinstance(s,type): # if constructor is passed, create instance
-    s = s()
-  return s # (if none, or already initialized scaler, return "self"
-
 def make_classification_report(
   # same params as sklearn.metrics.classification_report
   y_true,
@@ -224,31 +214,3 @@ def make_classification_report(
 
   return report_string
 
-# extending the sklearn make_train_test_split to optionally perform X scaling automatically
-def make_train_test_split(
-  X,
-  y,
-  test_size=None,
-  train_size=None,
-  random_state=None,
-  shuffle=True,
-  stratify=None,
-  x_scaler=None # optionally pass sklearn scaler to fit to train data, then apply to train and test data
-):
-  X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=test_size,
-    train_size=train_size,
-    random_state=random_state,
-    shuffle=shuffle,
-    stratify=stratify,
-  )
-
-  # apply scaler to X data if provided
-  x_scaler = resolve_scaler(x_scaler)
-  if(x_scaler):
-    X_train = x_scaler.fit_transform(X_train)
-    X_test = x_scaler.transform(X_test)
-
-  return X_train, X_test, y_train, y_test

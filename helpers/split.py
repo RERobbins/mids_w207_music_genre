@@ -3,6 +3,8 @@ import sys
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 
 def tag_label_feature_split(df,label_format='one_hot'):
@@ -77,3 +79,41 @@ def label_strings(one_hot_encoded_labels):
     """
     
     return one_hot_encoded_labels.idxmax(axis='columns').to_frame(name='label')
+
+
+# extending the sklearn make_train_test_split to optionally perform X scaling automatically
+def make_train_test_split(
+  X,
+  y,
+  test_size=None,
+  train_size=None,
+  random_state=None,
+  shuffle=True,
+  stratify=None,
+  x_scaler=None # optionally pass sklearn scaler to fit to train data, then apply to train and test data
+):
+  X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=test_size,
+    train_size=train_size,
+    random_state=random_state,
+    shuffle=shuffle,
+    stratify=stratify,
+  )
+
+  # apply scaler to X data if provided
+  x_scaler = resolve_scaler(x_scaler)
+  if(x_scaler):
+    X_train = x_scaler.fit_transform(X_train)
+    X_test = x_scaler.transform(X_test)
+
+  return X_train, X_test, y_train, y_test
+
+# reusable helper function to get an instance of a scaler from various polymorphisms
+def resolve_scaler(s):
+  if s == 'standard': # shortcut to initialize a stock StandardScaler
+    s = StandardScaler()
+  if isinstance(s,type): # if constructor is passed, create instance
+    s = s()
+  return s # (if none, or already initialized scaler, return "self"
