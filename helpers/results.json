@@ -1,0 +1,20 @@
+{
+    "logistic regression": {
+        "results": {
+            "accuracy": 0.6,
+            "mcc": 0.76
+        }
+    },
+    "Logistic regression 2": {
+        "results": {
+            "accuracy": 0.92,
+            "mcc": 0.56
+        },
+        "parameters": {
+            "epoch": [
+                254,
+                100
+            ]
+        }
+    }
+}
