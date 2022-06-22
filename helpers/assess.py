@@ -134,6 +134,7 @@ def make_classification_report(
   label_encoder=None, # optionally provide a label encoder for the to automatically get the label names
   save_result=False,
   model_name=None, 
+  additional_result_param=None,
   sample_weight=None,
   digits=2,
   output_dict=False,
@@ -182,7 +183,10 @@ def make_classification_report(
 
   if save_result:
     save = results()
-    save.save(test=model_name, results=cr)
+    if additional_result_param:
+      save.save(test=model_name, results=cr, additional=additional_result_param)
+    else:
+      save.save(test=model_name, results=cr)
 
   # return dictionary as-is if requested
   if output_dict:
