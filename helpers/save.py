@@ -82,26 +82,26 @@ class results():
         return self.results
 
 
-    def getResultRanked(self, metricName = None):
-        if metricName == None:
-            return ValueError('Metric name cannot be empty')
+    # def getResultRanked(self, metricName = None):
+    #     if metricName == None:
+    #         return ValueError('Metric name cannot be empty')
 
-        s = []
-        noRes = []
+    #     s = []
+    #     noRes = []
 
-        if len(self.results.keys()) == 0:
-            print('There are currently no tests')
-            return
+    #     if len(self.results.keys()) == 0:
+    #         print('There are currently no tests')
+    #         return
 
-        for test in self.results:
-            if metricName in self.results[test]['results']:
-                metricVal = self.results[test]['results'][metricName]
-                s.append((test, metricVal))
-            else:
-                metricVal = 'Record does not exist'
-                noRes.append((test, metricVal))
+    #     for test in self.results:
+    #         if metricName in self.results[test]['results']:
+    #             metricVal = self.results[test]['results'][metricName]
+    #             s.append((test, metricVal))
+    #         else:
+    #             metricVal = 'Record does not exist'
+    #             noRes.append((test, metricVal))
 
-        s = sorted(s, key=lambda x: x[1], reverse=True)
-        noRes = sorted(noRes, key=lambda y: y[0].lower())
+    #     s = sorted(s, key=lambda x: x[1], reverse=True)
+    #     noRes = sorted(noRes, key=lambda y: y[0].lower())
 
-        return s + noRes
+    #     return s + noRes

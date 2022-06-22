@@ -4,6 +4,8 @@ import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef
 from sklearn.utils.class_weight import compute_sample_weight
 
+from save import results
+
 def make_confusion_matrix(
   y_true,
   y_pred=None, # optionally pass in precalculated y predictions
@@ -130,12 +132,17 @@ def make_classification_report(
   labels=None, # optionally pass a list of label (integers) to *only* include in the report
   target_names=None, # optionally provide an explicit list of label names defining the label indexes
   label_encoder=None, # optionally provide a label encoder for the to automatically get the label names
+  save_result=False,
+  model_name=None, 
   sample_weight=None,
   digits=2,
   output_dict=False,
   zero_division="warn",
   print_report=False,
 ):
+
+  if save_result == True and model_name == None:
+    raise ValueError('Missing model name')
 
   # resolve polymorphisms / optional values
   y_pred = resolve_y_pred(
@@ -172,6 +179,10 @@ def make_classification_report(
 
   # generate multiclass mcc
   cr['accuracy']['mcc'] = matthews_corrcoef(y_true,y_pred)
+
+  if save_result:
+    save = results()
+    save.save(test=model_name, results=cr)
 
   # return dictionary as-is if requested
   if output_dict:
