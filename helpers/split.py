@@ -7,7 +7,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-def tag_label_feature_split(df,label_format='one_hot'):
+def tag_label_feature_split(
+    df,
+    label_format='one_hot',
+    samples_per_genre=None
+):
     """
     Returns the tags, labels and features from an MTG_Jamendo working dataset.
     
@@ -36,6 +40,14 @@ def tag_label_feature_split(df,label_format='one_hot'):
         tag DataFrame, label DataFrame, features DataFrame    
     """
 
+    # if datafile is actually a filepath to load instead of a pre-loaded df, load the datafile
+    if(type(df)==str):
+      df = pd.read_pickle(df)
+
+    # if we will only be returning a subset of rows we need to shuffle (before splitting vertically)
+    if samples_per_genre is not None:
+        df = df.sample(frac=1)
+
     tags = []
     labels = []
     features = []
@@ -49,6 +61,18 @@ def tag_label_feature_split(df,label_format='one_hot'):
             features.append(name)
 
     labels = df[labels].copy();
+    tags = df[tags].copy()
+    features = df[features].copy()
+
+    # if we are returning a balances subset
+    if samples_per_genre is not None:
+        # get indexes for each genre
+        balanced_idx = get_balanced_genre_indexes(labels,samples_per_genre)
+        # apply filter to each vertical split
+        labels = labels.loc[balanced_idx]
+        tags = tags.loc[balanced_idx]
+        features = features.loc[balanced_idx]
+
     if(label_format=='label_strings' or label_format=='encoded'):
         labels = label_strings(labels)
         if label_format=='encoded':
@@ -56,7 +80,7 @@ def tag_label_feature_split(df,label_format='one_hot'):
             labels = le.fit_transform(pd.Series.ravel(labels))
             labels = (labels,le)
 
-    return df[tags].copy(), labels, df[features].copy()
+    return tags, labels, features
 
 
 def label_strings(one_hot_encoded_labels):
@@ -117,3 +141,28 @@ def resolve_scaler(s):
   if isinstance(s,type): # if constructor is passed, create instance
     s = s()
   return s # (if none, or already initialized scaler, return "self"
+
+
+# return row indexes such that each genre has the same number of rows
+def get_balanced_genre_indexes(one_hot_encoded_labels,n):
+
+    # get the first n rows for each genre
+    label_samples = label_strings(one_hot_encoded_labels).groupby('label').head(n)
+
+    # get the number of samples returned for each genre
+    counts = pd.DataFrame(label_samples.groupby('label')['label'].count())
+    counts.columns.values[0] = 'c'
+    counts = counts.reset_index()
+
+    # return genres where the number or rows returned were less than n
+    ineligible_genres = counts[counts['c']<n]
+
+    # notify ineligible_genres
+    for idx,s in ineligible_genres.iterrows():
+      print(f"Dropping genre {s[0]} (only {s[1]} of {n} requested samples)")
+
+    # remove rows belonging to ineligible_genres
+    label_samples = label_samples[~label_samples['label'].isin(ineligible_genres['label'])]
+
+    # move "real" indexes into dataframe column and return
+    return label_samples.reset_index()['index']
