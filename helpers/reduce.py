@@ -11,6 +11,7 @@ def load_and_distill(
     labels=BASE_GENRES,
     multi_label=False,
     features=BASE_FEATURES,
+    metadata=[],
     tags=[],
     pickle=[],
 ):
@@ -39,6 +40,10 @@ def load_and_distill(
         The features to be included for each track, the default is helpers.constants.BASE_FEATURES.
         If the parameter is 'all', then all features will be included.
 
+    metadata: 'all' or a list of strings
+        The metadata columns to be included for each track.  If the paramter is the empty list (the default), 
+        metadata will not be included.  If the paramter is 'all', then all metadata will be included.
+
     tags: 'all' or a list of strings
         The tags to be included for each track.  If the paramter is the empty list (the default), 
         tags will not be included.  If the paramter is 'all', then all tags will be included.
@@ -62,6 +67,9 @@ def load_and_distill(
     else:
         result = data.drop(data[data[labels].sum(axis=1) != 1].index)
 
+    if metadata == "all":
+        metadata = [column for column in result.columns if column.startswith("metadata")]
+        
     if tags == "all":
         tags = [column for column in result.columns if column.startswith("tag")]
 
@@ -70,7 +78,7 @@ def load_and_distill(
             column for column in result.columns if not re.match("tag|genre", column)
         ]
 
-    result = result[tags + features + labels]
+    result = result[metadata + tags + features + labels]
 
     if pickle:
         result.to_pickle(path=pickle, compression="infer")
