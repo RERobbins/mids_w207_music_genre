@@ -29,3 +29,7 @@ Please note that the column `rhythm_beats_position` is not flattened because the
 For more information on the features included in this dataset, refer to [the original repo](https://github.com/MTG/mtg-jamendo-dataset#readme).
 
 A draft data dictionary can be found [here](https://docs.google.com/spreadsheets/d/1lTTJoC7Jg2_InKtu1POj-2y0YOgznqRFhMIIk5iYJ4A/edit#gid=0&range=A1).
+
+## Links to melspecs
+ - [Melspecs for all tracks](https://drive.google.com/file/d/13ZSDKOXiAFm5d9u1fUJl5mvrh49MQ3-J/view?usp=sharing)
+ - [Flattened melspecs for all tracks](https://drive.google.com/file/d/13-6E5vABT5hBuzwHnD6h4xwCsCgnddfQ/view?usp=sharing)
