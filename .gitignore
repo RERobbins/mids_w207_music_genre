@@ -132,4 +132,6 @@ dmypy.json
 **/.DS_Store
 
 *.bz2
-dataset*melspecs.pickle
+dataset*all*.pickle
+dataset*melspec*.pickle
+datasets/reference\ datasets/
