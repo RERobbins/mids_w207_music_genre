@@ -36,12 +36,13 @@ def load_and_distill(
         label paramters, otherwise only tracks associated with a single label but not more 
         than one will be included.  The default is False.
 
-    features: 'all' or a list of strings
+    features: 'all', 'all_scalar' or a list of strings
         The features to be included for each track, the default is helpers.constants.BASE_FEATURES.
-        If the parameter is 'all', then all features will be included.
-
+        If the parameter is 'all', then all features will be included.  The 'all_scalar' value is
+        used to specify all features other than non_scalar features.
+        
     metadata: 'all' or a list of strings
-        The metadata columns to be included for each track.  If the paramter is the empty list (the default), 
+        The metadata to be included for each track.  If the paramter is the empty list (the default), 
         metadata will not be included.  If the paramter is 'all', then all metadata will be included.
 
     tags: 'all' or a list of strings
@@ -75,8 +76,14 @@ def load_and_distill(
 
     if features == "all":
         features = [
-            column for column in result.columns if not re.match("tag|genre", column)
+            column for column in result.columns if not re.match("tag|genre|metadata", column)
         ]
+        
+    if features == "all_scalar":
+        all_features == [column for column in result.columns if not re.match("tag|genre|metadata", column)]
+        non_scalar = result.select_dtypes(exclude='number')
+        all_scalar = set(all_features) - set(non_scalar)
+        features = [column for column in result.columns if column in all_scalar]       
 
     result = result[metadata + tags + features + labels]
 
