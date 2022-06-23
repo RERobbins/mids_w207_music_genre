@@ -137,6 +137,7 @@ def make_classification_report(
   additional_result_param=None,
   repeat=False,
   sample_weight=None,
+  result_filename=None,
   digits=2,
   output_dict=False,
   zero_division="warn",
@@ -183,7 +184,7 @@ def make_classification_report(
   cr['accuracy']['mcc'] = matthews_corrcoef(y_true,y_pred)
 
   if save_result:
-    save = results()
+    save = results(result_filename)
     if additional_result_param:
       save.save(test=model_name, results=cr, additional=additional_result_param, repeat=repeat)
     else:
