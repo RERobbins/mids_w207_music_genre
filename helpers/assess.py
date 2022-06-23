@@ -135,6 +135,7 @@ def make_classification_report(
   save_result=False,
   model_name=None, 
   additional_result_param=None,
+  repeat=False,
   sample_weight=None,
   digits=2,
   output_dict=False,
@@ -184,9 +185,9 @@ def make_classification_report(
   if save_result:
     save = results()
     if additional_result_param:
-      save.save(test=model_name, results=cr, additional=additional_result_param)
+      save.save(test=model_name, results=cr, additional=additional_result_param, repeat=repeat)
     else:
-      save.save(test=model_name, results=cr)
+      save.save(test=model_name, results=cr, repeat=repeat)
 
   # return dictionary as-is if requested
   if output_dict:

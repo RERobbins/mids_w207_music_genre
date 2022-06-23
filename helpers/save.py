@@ -11,7 +11,7 @@ class results():
         with open(self.filepath) as results:
             self.results = json.load(results)
 
-    def save(self, test = None, results = None, additional = None):
+    def save(self, test = None, results = None, additional = None, repeat = False):
         if test == None:
             return ValueError('Test name cannot be empty')
         if results == None:
@@ -24,15 +24,20 @@ class results():
             self.results[test]['results'] = results
             self.results[test] = {**self.results[test], **additional}
         else:
-            ans = input(f'Test {test} is already in record, would you like to override? (y/n)')
-            while ans.lower() not in ['y', 'n', 'yes', 'no']:
-                ans = input(f'answer {ans} invalid, please choose (y/n)')
-            if ans.lower() in ['y', 'yes']:
+            if repeat:
                 self.results[test]['results'] = results
                 self.results[test] = {**self.results[test], **additional}
+                print(f'Test {test} is already in record, proceed to override.')
             else:
-                print('Do not override, test result not saved')
-                return
+                ans = input(f'Test {test} is already in record, would you like to override? (y/n)')
+                while ans.lower() not in ['y', 'n', 'yes', 'no']:
+                    ans = input(f'answer {ans} invalid, please choose (y/n)')
+                if ans.lower() in ['y', 'yes']:
+                    self.results[test]['results'] = results
+                    self.results[test] = {**self.results[test], **additional}
+                else:
+                    print('Do not override, test result not saved')
+                    return
 
         with open(self.filepath, 'w') as outfile:
             json.dump(self.results, outfile, indent=4)
