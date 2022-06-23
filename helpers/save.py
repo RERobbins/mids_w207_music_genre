@@ -1,15 +1,26 @@
 import os
+import re
 import json
 
 from fuzzywuzzy import fuzz
+from pathlib import Path
 # make sure you installed fuzzywuzzy and python-Levenshtein
 
 class results():
 
-    def __init__(self):
-        self.filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results.json')
-        with open(self.filepath) as results:
-            self.results = json.load(results)
+    def __init__(self, filename = None):
+        if not filename:
+            filename = input('You did not pass in file name, please input your file name (please include .json as file extension)')
+            while filename.search('\.(json)$', filename) == None:
+                filename = input('Your input does not contain .json as file extension. Please input correct file name')
+
+        self.filepath = os.path.join(Path().absolute().parents[1], 'results', filename)
+        with open(self.filepath, 'r+') as results:
+            try:
+                self.results = json.load(results)
+            except json.decoder.JSONDecodeError:
+                self.results = {}
+                pass
 
     def save(self, test = None, results = None, additional = None, repeat = False):
         if test == None:
