@@ -22,11 +22,13 @@ class results():
         if test.lower() not in allLower:
             self.results[test] = {}
             self.results[test]['results'] = results
-            self.results[test] = {**self.results[test], **additional}
+            if additional:
+                self.results[test] = {**self.results[test], **additional}
         else:
             if repeat:
                 self.results[test]['results'] = results
-                self.results[test] = {**self.results[test], **additional}
+                if additional:
+                    self.results[test] = {**self.results[test], **additional}
                 print(f'Test {test} is already in record, proceed to override.')
             else:
                 ans = input(f'Test {test} is already in record, would you like to override? (y/n)')
@@ -34,7 +36,8 @@ class results():
                     ans = input(f'answer {ans} invalid, please choose (y/n)')
                 if ans.lower() in ['y', 'yes']:
                     self.results[test]['results'] = results
-                    self.results[test] = {**self.results[test], **additional}
+                    if additional:
+                        self.results[test] = {**self.results[test], **additional}
                 else:
                     print('Do not override, test result not saved')
                     return
