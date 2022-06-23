@@ -390,7 +390,7 @@ BASE_FEATURES = MFCC_MEAN
 FEATURE_SETS = [
     (name, set)
     for name, set in [
-        ("all.pickle", "all"),
+        ("all.pickle", "all_scalar"),
         ("mean.pickle", MFCC_MEAN),
         ("mean_cov.pickle", MFCC_MEAN + MFCC_COVARIANCE),
         ("mean_icov.pickle", MFCC_MEAN + MFCC_INVERSE_COVARIANCE),

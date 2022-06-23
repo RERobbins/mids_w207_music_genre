@@ -80,7 +80,7 @@ def load_and_distill(
         ]
         
     if features == "all_scalar":
-        all_features == [column for column in result.columns if not re.match("tag|genre|metadata", column)]
+        all_features = [column for column in result.columns if not re.match("tag|genre|metadata", column)]
         non_scalar = result.select_dtypes(exclude='number')
         all_scalar = set(all_features) - set(non_scalar)
         features = [column for column in result.columns if column in all_scalar]       
