@@ -69,21 +69,29 @@ def load_and_distill(
         result = data.drop(data[data[labels].sum(axis=1) != 1].index)
 
     if metadata == "all":
-        metadata = [column for column in result.columns if column.startswith("metadata")]
-        
+        metadata = [
+            column for column in result.columns if column.startswith("metadata")
+        ]
+
     if tags == "all":
         tags = [column for column in result.columns if column.startswith("tag")]
 
     if features == "all":
         features = [
-            column for column in result.columns if not re.match("tag|genre|metadata", column)
+            column
+            for column in result.columns
+            if not re.match("tag|genre|metadata", column)
         ]
-        
+
     if features == "all_scalar":
-        all_features = [column for column in result.columns if not re.match("tag|genre|metadata", column)]
-        non_scalar = result.select_dtypes(exclude='number')
+        all_features = [
+            column
+            for column in result.columns
+            if not re.match("tag|genre|metadata", column)
+        ]
+        non_scalar = result.select_dtypes(exclude="number")
         all_scalar = set(all_features) - set(non_scalar)
-        features = [column for column in result.columns if column in all_scalar]       
+        features = [column for column in result.columns if column in all_scalar]
 
     result = result[metadata + tags + features + labels]
 

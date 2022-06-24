@@ -399,6 +399,9 @@ FEATURE_SETS = [
         ("pvtt_mean.pickle", P_VAL_TOP_TEN + MFCC_MEAN),
         ("pvtt_mean_cov.pickle", P_VAL_TOP_TEN + MFCC_MEAN + MFCC_COVARIANCE),
         ("pvtt_mean_icov.pickle", P_VAL_TOP_TEN + MFCC_MEAN + MFCC_INVERSE_COVARIANCE),
-        ("pvtt_mean_cov_icov.pickle", P_VAL_TOP_TEN + MFCC_MEAN + MFCC_COVARIANCE + MFCC_INVERSE_COVARIANCE),
+        (
+            "pvtt_mean_cov_icov.pickle",
+            P_VAL_TOP_TEN + MFCC_MEAN + MFCC_COVARIANCE + MFCC_INVERSE_COVARIANCE,
+        ),
     ]
 ]

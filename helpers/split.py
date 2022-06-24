@@ -151,7 +151,9 @@ def get_balanced_genre_indexes(one_hot_encoded_labels, n):
 
     # set n to max_n if too many samples requested
     if max_n < n:
-        print(f"n = {n} is less than samples in smallest genre. Will return {max_n} per genre")
+        print(
+            f"n = {n} is less than samples in smallest genre. Will return {max_n} per genre"
+        )
         n = max_n
 
     # get the first n rows for each genre
