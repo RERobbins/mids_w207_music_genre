@@ -143,25 +143,19 @@ def resolve_scaler(s):
 # return row indexes such that each genre has the same number of rows
 def get_balanced_genre_indexes(one_hot_encoded_labels, n):
 
+    # get list of genres to count
+    label_samples = label_strings(one_hot_encoded_labels)
+
+    # get sample count for smallest genre
+    max_n = pd.DataFrame(label_samples.groupby("label")["label"].count()).min()[0]
+
+    # set n to max_n if too many samples requested
+    if max_n < n:
+        print(f"n = {n} is less than samples in smallest genre. Will return {max_n} per genre")
+        n = max_n
+
     # get the first n rows for each genre
-    label_samples = label_strings(one_hot_encoded_labels).groupby("label").head(n)
-
-    # get the number of samples returned for each genre
-    counts = pd.DataFrame(label_samples.groupby("label")["label"].count())
-    counts.columns.values[0] = "c"
-    counts = counts.reset_index()
-
-    # return genres where the number or rows returned were less than n
-    ineligible_genres = counts[counts["c"] < n]
-
-    # notify ineligible_genres
-    for idx, s in ineligible_genres.iterrows():
-        print(f"Dropping genre {s[0]} (only {s[1]} of {n} requested samples)")
-
-    # remove rows belonging to ineligible_genres
-    label_samples = label_samples[
-        ~label_samples["label"].isin(ineligible_genres["label"])
-    ]
+    label_samples = label_samples.groupby("label").head(n)
 
     # move "real" indexes into dataframe column and return
     return label_samples.reset_index()["index"]

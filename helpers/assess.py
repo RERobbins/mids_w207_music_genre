@@ -142,6 +142,7 @@ def make_classification_report(
   output_dict=False,
   zero_division="warn",
   print_report=False,
+  compare_to=None,
 ):
 
   if save_result == True and model_name == None:
@@ -190,9 +191,27 @@ def make_classification_report(
     else:
       save.save(test=model_name, results=cr, repeat=repeat)
 
-  # return dictionary as-is if requested
-  if output_dict:
+  metric_cols = ['label','precision','recall','f1-score','support','mcc']
+  meta_labels = ['','accuracy','macro avg','weighted avg','min']
+  real_labels = [k for k in cr.keys() if k not in meta_labels]
+
+  cr['min'] = {
+     m:min([cr[g][m] for g in real_labels])
+     for m in metric_cols if m != 'label'
+  }
+
+  # if another classification report is passed to compare to, calculate the delta for each value
+  if compare_to is not None:
+    for rk,rv in cr.copy().items():
+      for mk,mv in rv.copy().items():
+        cr[rk][mk] = mv - compare_to[rk][mk]
+
+  # return dictionary as-is if requested and no string parsing is necessary for print
+  deferred_cr = None
+  if output_dict and print_report == False:
     return cr
+  else:
+    deferred_cr = cr.copy()
 
   # parse a table to a string
 
@@ -205,29 +224,25 @@ def make_classification_report(
                for label,l_object in cr.items()]
 
   # split labels into real labels and meta labels for calculating sort order
-  meta_labels = ['','accuracy','macro avg','weighted avg']
-  real_labels = [k for k in cr.keys() if k not in meta_labels]
   real_labels.sort()
 
   # sort all table rows
   cr_arr.sort(key=lambda x: real_labels.index(x['label']) if x['label'] in real_labels else len(real_labels) + meta_labels.index(x['label']))
 
-  cols = ['label','precision','recall','f1-score','support','mcc']
-
   # prepend header row and simulated newline
-  cr_arr = [{c:c for c in cols if c != 'label'},{}] + cr_arr
+  cr_arr = [{c:c for c in metric_cols if c != 'label'},{}] + cr_arr
 
   # calculate padding necessary to align all rows
-  paddings = {col:max([len(r.get(col,'')) for r in cr_arr])+2 for col in cols}
+  paddings = {col:max([len(r.get(col,'')) for r in cr_arr])+2 for col in metric_cols}
 
   report_string = "\n".join([
       ''.join([
           r.get(c,'').rjust(paddings[c],' ')
-       for c in cols]) 
+       for c in metric_cols]) 
   for r in cr_arr])
 
   if print_report:
     print(report_string)
 
-  return report_string
+  return deferred_cr if output_dict else report_string
 

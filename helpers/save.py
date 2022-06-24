@@ -40,7 +40,7 @@ class results():
                 self.results[test]['results'] = results
                 if additional:
                     self.results[test] = {**self.results[test], **additional}
-                print(f'Test {test} is already in record, proceed to override.')
+                # print(f'Test {test} is already in record, proceed to override.')
             else:
                 ans = input(f'Test {test} is already in record, would you like to override? (y/n)')
                 while ans.lower() not in ['y', 'n', 'yes', 'no']:
