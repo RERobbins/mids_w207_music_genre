@@ -142,6 +142,7 @@ def make_classification_report(
   output_dict=False,
   zero_division="warn",
   print_report=False,
+  compare_to=None,
 ):
 
   if save_result == True and model_name == None:
@@ -199,9 +200,18 @@ def make_classification_report(
      for m in metric_cols if m != 'label'
   }
 
-  # return dictionary as-is if requested
-  if output_dict:
+  # if another classification report is passed to compare to, calculate the delta for each value
+  if compare_to is not None:
+    for rk,rv in cr.copy().items():
+      for mk,mv in rv.copy().items():
+        cr[rk][mk] = mv - compare_to[rk][mk]
+
+  # return dictionary as-is if requested and no string parsing is necessary for print
+  deferred_cr = None
+  if output_dict and print_report == False:
     return cr
+  else:
+    deferred_cr = cr.copy()
 
   # parse a table to a string
 
@@ -234,5 +244,5 @@ def make_classification_report(
   if print_report:
     print(report_string)
 
-  return report_string
+  return deferred_cr if output_dict else report_string
 
