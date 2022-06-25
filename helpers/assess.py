@@ -62,11 +62,14 @@ def make_confusion_matrix(
 
 
 # reusable helper function to get a y_pred array from various polymorphisms
-def resolve_y_pred(y_pred=None, model=None, x=None):
+def resolve_y_pred(y_pred=None, model=None, x=None,postprocess_y_pred_fn=None):
     if y_pred is not None:
         return y_pred
     elif model and x is not None:
-        return model.predict(x)
+        y_pred = model.predict(x)
+        if postprocess_y_pred_fn is not None:
+            y_pred = postprocess_y_pred_fn(y_pred)
+        return y_pred
     else:
         raise Exception(
             "Both a model and x (feature set) must be passed if a y_pred is not provided."
@@ -126,13 +129,14 @@ def make_classification_report(
     zero_division="warn",
     print_report=False,
     compare_to=None,
+    postprocess_y_pred_fn=None,
 ):
 
     if save_result == True and model_name == None:
         raise ValueError("Missing model name")
 
     # resolve polymorphisms / optional values
-    y_pred = resolve_y_pred(y_pred=y_pred, model=model, x=x,)
+    y_pred = resolve_y_pred(y_pred=y_pred, model=model, x=x,postprocess_y_pred_fn=postprocess_y_pred_fn)
     target_names = resolve_label_names(
         y_true,
         y_pred,
