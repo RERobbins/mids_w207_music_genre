@@ -4,6 +4,7 @@ import pandas as pd
 
 from helpers.assess import make_classification_report, make_confusion_matrix, resolve_sample_weight
 from helpers.split import make_train_test_split, tag_label_feature_split
+from sklearn.utils.class_weight import compute_class_weight
 
 def experiment(
     model,
@@ -47,12 +48,11 @@ def experiment(
 
     # if the model requires a custom invokation to the fit method, call it here
     if model_fit_call_fn is not None:
-        sample_weight = resolve_sample_weight(y_train)
         model_fit_call_fn(
             model=model,
             X_train=X_train_std,
             y_train=y_train,
-            sample_weight=resolve_sample_weight(y_train)
+            class_weight={i:c  for i,c in enumerate(compute_class_weight(class_weight='balanced',classes=le.transform(le.classes_),y=y_train))}
         )
     # otherwise use the default fit method
     else:
