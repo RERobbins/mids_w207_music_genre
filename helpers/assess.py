@@ -82,7 +82,7 @@ def resolve_label_names(
     if not label_names:
         # get a unique list of labels in the matrix
         unique_labels = None
-        if model and model.classes_ is not None:
+        if model and hasattr(model, 'classes_'):
             unique_labels = list(model.classes_)
         else:
             unique_labels = np.sort(np.unique(np.concatenate([y_true, y_pred])))

@@ -6,7 +6,9 @@ from helpers.assess import make_classification_report, make_confusion_matrix
 from helpers.split import make_train_test_split, tag_label_feature_split
 
 
-def experiment(model, dataset, name=None, samples_per_genre=None, result_filename=None):
+def experiment(
+    model, dataset, name=None, samples_per_genre=None, result_filename=None,
+):
 
     if name is None:
         model_name = type(model).__name__
@@ -32,6 +34,7 @@ def experiment(model, dataset, name=None, samples_per_genre=None, result_filenam
     )
 
     model.fit(X_train_std, y_train)
+
     predictions = model.predict(X_test_std)
     train_accuracy = model.score(X_train_std, y_train)
     test_accuracy = model.score(X_test_std, y_test)
