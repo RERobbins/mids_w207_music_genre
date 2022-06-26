@@ -2,9 +2,14 @@ import os
 import numpy as np
 import pandas as pd
 
-from helpers.assess import make_classification_report, make_confusion_matrix, resolve_sample_weight
+from helpers.assess import (
+    make_classification_report,
+    make_confusion_matrix,
+    resolve_sample_weight,
+)
 from helpers.split import make_train_test_split, tag_label_feature_split
 from sklearn.utils.class_weight import compute_class_weight
+
 
 def experiment(
     model,
@@ -12,11 +17,11 @@ def experiment(
     name=None,
     samples_per_genre=None,
     result_filename=None,
-    model_fit_call_fn=None, # a custom fn to fall model.fit if the model type does not accept the default parameters
-    postprocess_y_pred_fn=None # if the model type requires a certain transformation of y_pred before scoring, pass the transformation fn here
+    model_fit_call_fn=None,  # a custom fn to fall model.fit if the model type does not accept the default parameters
+    postprocess_y_pred_fn=None,  # if the model type requires a certain transformation of y_pred before scoring, pass the transformation fn here
 ):
 
-    name,dataset_name = resolve_experiment_names(name,model,dataset)
+    name, dataset_name = resolve_experiment_names(name, model, dataset)
     model_name = type(model).__name__
 
     if callable(model) == False:
@@ -42,9 +47,9 @@ def experiment(
 
     # if the model is actually a model factory function, then invoke to build model
     if callable(model):
-        model = model(X_train=X_train_std,y_train=y_train,le=le)
+        model = model(X_train=X_train_std, y_train=y_train, le=le)
         # can now generate the name of the model
-        name,_ = resolve_experiment_names(name,model,dataset)
+        name, _ = resolve_experiment_names(name, model, dataset)
         print(f"\n\nCommencing Experiment: {name}\n")
 
     # if the model requires a custom invokation to the fit method, call it here
@@ -53,7 +58,16 @@ def experiment(
             model=model,
             X_train=X_train_std,
             y_train=y_train,
-            class_weight={i:c  for i,c in enumerate(compute_class_weight(class_weight='balanced',classes=le.transform(le.classes_),y=y_train))}
+            class_weight={
+                i: c
+                for i, c in enumerate(
+                    compute_class_weight(
+                        class_weight="balanced",
+                        classes=le.transform(le.classes_),
+                        y=y_train,
+                    )
+                )
+            },
         )
     # otherwise use the default fit method
     else:
@@ -64,7 +78,7 @@ def experiment(
         y_test_pred = postprocess_y_pred_fn(y_test_pred)
     train_accuracy = float("nan")
     test_accuracy = float("nan")
-    if hasattr(model,'score'):
+    if hasattr(model, "score"):
         train_accuracy = model.score(X_train_std, y_train)
         test_accuracy = model.score(X_test_std, y_test)
 
@@ -80,7 +94,7 @@ def experiment(
         result_filename=result_filename,
         model_name=model_name,
         dataset_name=dataset_name,
-        phase='train',
+        phase="train",
         repeat=True,
         postprocess_y_pred_fn=postprocess_y_pred_fn,
     )
@@ -96,7 +110,7 @@ def experiment(
         result_filename=result_filename,
         model_name=model_name,
         dataset_name=dataset_name,
-        phase='test',
+        phase="test",
         repeat=True,
     )
 
@@ -109,7 +123,8 @@ def experiment(
 
     return
 
-def resolve_experiment_names(name,model,dataset_name):
+
+def resolve_experiment_names(name, model, dataset_name):
     # get dataset name
     if isinstance(dataset_name, str):
         dataset_name = os.path.basename(dataset_name).split(".")[0]
@@ -119,4 +134,4 @@ def resolve_experiment_names(name,model,dataset_name):
     if name is None and model is not None:
         model_name = type(model).__name__
         name = f"{model_name}_{dataset_name}"
-    return name,dataset_name
+    return name, dataset_name
