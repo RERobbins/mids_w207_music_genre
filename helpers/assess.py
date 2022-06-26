@@ -120,6 +120,8 @@ def make_classification_report(
     label_encoder=None,  # optionally provide a label encoder for the to automatically get the label names
     save_result=False,
     model_name=None,
+    dataset_name=None,
+    phase=None,
     additional_result_param=None,
     repeat=False,
     sample_weight=None,
@@ -132,8 +134,13 @@ def make_classification_report(
     postprocess_y_pred_fn=None,
 ):
 
-    if save_result == True and model_name == None:
-        raise ValueError("Missing model name")
+    if save_result == True:
+        if not model_name:
+            raise ValueError("Missing model name")
+        if not dataset_name:
+            raise ValueError("Missing dataset name")
+        if not phase:
+            raise ValueError("Missing phase")
 
     # resolve polymorphisms / optional values
     y_pred = resolve_y_pred(y_pred=y_pred, model=model, x=x,postprocess_y_pred_fn=postprocess_y_pred_fn)
@@ -174,13 +181,21 @@ def make_classification_report(
         save = results(result_filename)
         if additional_result_param:
             save.save(
-                test=model_name,
+                model=model_name,
+                dataset=dataset_name,
+                phase=phase,
                 results=cr,
                 additional=additional_result_param,
                 repeat=repeat,
             )
         else:
-            save.save(test=model_name, results=cr, repeat=repeat)
+            save.save(
+                model=model_name,
+                dataset=dataset_name,
+                phase=phase, 
+                results=cr, 
+                repeat=repeat
+            )
 
     metric_cols = ["label", "precision", "recall", "f1-score", "support", "mcc"]
     meta_labels = ["", "accuracy", "macro avg", "weighted avg", "min"]
