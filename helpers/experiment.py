@@ -1,10 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 
 from helpers.assess import make_classification_report, make_confusion_matrix, resolve_sample_weight
 from helpers.split import make_train_test_split, tag_label_feature_split
 from sklearn.utils.class_weight import compute_class_weight
+
 
 def experiment(
     model,
@@ -47,9 +49,11 @@ def experiment(
         name,_ = resolve_experiment_names(name,model,dataset)
         print(f"\n\nCommencing Experiment: {name}\n")
 
+    fit_history = None
+
     # if the model requires a custom invokation to the fit method, call it here
     if model_fit_call_fn is not None:
-        model_fit_call_fn(
+        fit_history = model_fit_call_fn(
             model=model,
             X_train=X_train_std,
             y_train=y_train,
@@ -57,7 +61,7 @@ def experiment(
         )
     # otherwise use the default fit method
     else:
-        model.fit(X_train_std, y_train)
+        fit_history = model.fit(X_train_std, y_train)
 
     y_test_pred = model.predict(X_test_std)
     if postprocess_y_pred_fn is not None:
@@ -67,6 +71,9 @@ def experiment(
     if hasattr(model,'score'):
         train_accuracy = model.score(X_train_std, y_train)
         test_accuracy = model.score(X_test_std, y_test)
+    elif isinstance(fit_history,tf.keras.callbacks.History):
+        train_accuracy = fit_history.history['accuracy'][-1]
+        test_accuracy = fit_history.history['val_accuracy'][-1]
 
     print(f"Training accuracy: {train_accuracy = :f}\n")
     make_classification_report(
