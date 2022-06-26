@@ -17,6 +17,7 @@ def experiment(
 ):
 
     name,dataset_name = resolve_experiment_names(name,model,dataset)
+    model_name = type(model).__name__
 
     if callable(model) == False:
         print(f"\n\nCommencing Experiment: {name}\n")
@@ -77,7 +78,9 @@ def experiment(
         print_report=True,
         save_result=result_filename is not None,
         result_filename=result_filename,
-        model_name=name + "_train",
+        model_name=model_name,
+        dataset_name=dataset_name,
+        phase='train',
         repeat=True,
         postprocess_y_pred_fn=postprocess_y_pred_fn,
     )
@@ -91,7 +94,9 @@ def experiment(
         print_report=True,
         save_result=result_filename is not None,
         result_filename=result_filename,
-        model_name=name + "_test",
+        model_name=model_name,
+        dataset_name=dataset_name,
+        phase='test',
         repeat=True,
     )
 
