@@ -16,17 +16,21 @@ class results():
             while filename.search('\.(json)$', filename) == None:
                 filename = input('Your input does not contain .json as file extension. Please input correct file name')
 
-        self.filepath = os.path.join(Path().absolute().parents[1], 'results', filename)
-        with open(self.filepath, 'w+') as results:
-            try:
-                self.results = json.load(results)
-                self.df = pd.json_normalize(self.results, record_path=['experiment'], max_level=0)
-            except json.decoder.JSONDecodeError:
+        self.filepath = os.path.join(Path(__file__).parents[1], 'results', filename)
+        print(self.filepath)
+        try:
+            with open(self.filepath, 'x+') as results:
+                print("File do not exist, creating file now")
                 self.results = {
                     "experiment": []
                 }
                 self.df = pd.json_normalize(self.results, record_path=['experiment'], max_level=0)
-                pass
+        except FileExistsError:
+            with open(self.filepath, 'r') as results:
+                print("file exist, reading json")
+                self.results = json.load(results)
+                self.df = pd.json_normalize(self.results, record_path=['experiment'], max_level=0)
+        
 
     def save(self, model = None, dataset = None, phase = None, results = None, additional = None, repeat = False):
         if model == None:
