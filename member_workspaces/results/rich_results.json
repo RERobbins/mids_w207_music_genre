@@ -1,0 +1,98 @@
+{
+    "experiment": [
+        {
+            "model": "LogisticRegression",
+            "dataset": "dataset_10_melspectrograms_flattened_pca",
+            "phase": "test",
+            "result": {
+                "genre_blues": {
+                    "precision": 0.0753424658,
+                    "recall": 0.1170212766,
+                    "f1-score": 0.0916666667,
+                    "support": 94,
+                    "mcc": 0.0683909288
+                },
+                "genre_classical": {
+                    "precision": 0.7185628743,
+                    "recall": 0.682464455,
+                    "f1-score": 0.7000486145,
+                    "support": 1055,
+                    "mcc": 0.605337729
+                },
+                "genre_country": {
+                    "precision": 0.0733944954,
+                    "recall": 0.0975609756,
+                    "f1-score": 0.0837696335,
+                    "support": 82,
+                    "mcc": 0.0639132434
+                },
+                "genre_disco": {
+                    "precision": 0.1074380165,
+                    "recall": 0.1805555556,
+                    "f1-score": 0.1347150259,
+                    "support": 72,
+                    "mcc": 0.1201412095
+                },
+                "genre_hiphop": {
+                    "precision": 0.2926315789,
+                    "recall": 0.3270588235,
+                    "f1-score": 0.3088888889,
+                    "support": 425,
+                    "mcc": 0.2282174083
+                },
+                "genre_jazz": {
+                    "precision": 0.2141057935,
+                    "recall": 0.2733118971,
+                    "f1-score": 0.2401129944,
+                    "support": 311,
+                    "mcc": 0.1740708132
+                },
+                "genre_metal": {
+                    "precision": 0.1660899654,
+                    "recall": 0.2891566265,
+                    "f1-score": 0.210989011,
+                    "support": 166,
+                    "mcc": 0.1773305329
+                },
+                "genre_pop": {
+                    "precision": 0.4146341463,
+                    "recall": 0.3021515435,
+                    "f1-score": 0.3495670996,
+                    "support": 1069,
+                    "mcc": 0.1791879688
+                },
+                "genre_reggae": {
+                    "precision": 0.1538461538,
+                    "recall": 0.1725888325,
+                    "f1-score": 0.1626794258,
+                    "support": 197,
+                    "mcc": 0.1199652463
+                },
+                "genre_rock": {
+                    "precision": 0.4521857923,
+                    "recall": 0.41375,
+                    "f1-score": 0.4321148825,
+                    "support": 800,
+                    "mcc": 0.3087558443
+                },
+                "accuracy": {
+                    "f1-score": 0.4008428939,
+                    "support": 4271,
+                    "mcc": 0.2876835376
+                },
+                "macro avg": {
+                    "precision": 0.2668231282,
+                    "recall": 0.2855619986,
+                    "f1-score": 0.2714552243,
+                    "support": 4271
+                },
+                "weighted avg": {
+                    "precision": 0.4291141174,
+                    "recall": 0.4008428939,
+                    "f1-score": 0.4111778562,
+                    "support": 4271
+                }
+            }
+        }
+    ]
+}
