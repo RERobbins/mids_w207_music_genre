@@ -17,7 +17,7 @@ class results():
                 filename = input('Your input does not contain .json as file extension. Please input correct file name')
 
         self.filepath = os.path.join(Path().absolute().parents[1], 'results', filename)
-        with open(self.filepath, 'r+') as results:
+        with open(self.filepath, 'w+') as results:
             try:
                 self.results = json.load(results)
                 self.df = pd.json_normalize(self.results, record_path=['experiment'], max_level=0)
