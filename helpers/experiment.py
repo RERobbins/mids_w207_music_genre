@@ -10,19 +10,22 @@ from helpers.assess import (
 )
 from helpers.split import make_train_test_split, tag_label_feature_split
 from sklearn.utils.class_weight import compute_class_weight
-
+from sklearn.decomposition import PCA
 
 def experiment(
     model,
     dataset,
     name=None,
     samples_per_genre=None,
+    pca_components=None,
     result_filename=None,
     model_fit_call_fn=None,  # a custom fn to fall model.fit if the model type does not accept the default parameters
     postprocess_y_pred_fn=None,  # if the model type requires a certain transformation of y_pred before scoring, pass the transformation fn here
 ):
 
     name, dataset_name = resolve_experiment_names(name, model, dataset)
+    if pca_components is not None:
+        dataset_name = dataset_name+"_pca"
     model_name = type(model).__name__
 
     if callable(model) == False:
@@ -46,6 +49,15 @@ def experiment(
         X, y, test_size=0.2, random_state=10, stratify=y, x_scaler="standard"
     )
 
+    # if pca_components parameter is specified, we transform the features using it.
+    
+    if pca_components is not None:
+        print ("PCA pre_processing started")
+        pca = PCA(n_components=pca_components)
+        X_train_std = pca.fit_transform (X_train_std)
+        X_test_std = pca.transform (X_test_std)
+        print ("PCA pre_processing completed")
+        
     # if the model is actually a model factory function, then invoke to build model
     if callable(model):
         model = model(X_train=X_train_std, y_train=y_train, le=le)
