@@ -149,12 +149,20 @@ def get_balanced_genre_indexes(one_hot_encoded_labels, n):
     # get sample count for smallest genre
     max_n = pd.DataFrame(label_samples.groupby("label")["label"].count()).min()[0]
 
+    
+    # Disable code that limited return results to max_n instead, if max_n < n
+    # print a warning that under represented genres remain.
+    
     # set n to max_n if too many samples requested
     if max_n < n:
+    #    print(
+    #        f"n = {n} is less than samples in smallest genre. Will return {max_n} per genre"
+    #    )
+    #    n = max_n
+    
         print(
-            f"n = {n} is less than samples in smallest genre. Will return {max_n} per genre"
+            f"n = {n} is less than samples in some genres, which will remain under represented"
         )
-        n = max_n
 
     # get the first n rows for each genre
     label_samples = label_samples.groupby("label").head(n)
