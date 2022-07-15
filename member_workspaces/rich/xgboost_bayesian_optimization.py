@@ -73,7 +73,7 @@ def get_data(dataset, scaling=False, pca_components=None, resampling=None):
         enn = EditedNearestNeighbours(kind_sel='mode', n_neighbors=3, n_jobs=-1)
         smt = SMOTEENN (random_state=1962, enn=enn)
 
-    if resmpling == "SMOTETomek":
+    if resampling == "SMOTETomek":
         smt = SMOTETomek(random_state=1962, n_jobs=-1)
         
     if smt is not None:
