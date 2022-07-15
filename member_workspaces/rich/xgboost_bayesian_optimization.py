@@ -1,5 +1,6 @@
 import json
 import sys
+import time
 import warnings
 
 import numpy as np
@@ -8,25 +9,35 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA, KernelPCA
+from sklearn.decomposition import PCA
 from sklearn.model_selection import cross_val_score, cross_validate
 
 from xgboost import XGBClassifier
 from bayes_opt import BayesianOptimization
-from bayes_opt.logger import JSONLogger
-from bayes_opt.event import Events
+
+from imblearn.combine import SMOTEENN, SMOTETomek
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import EditedNearestNeighbours
 
 sys.path.append("../../")
 
-from helpers.split import make_train_test_split, tag_label_feature_split
+from helpers.split import tag_label_feature_split
 from helpers.assess import make_classification_report, make_confusion_matrix
 
 DATASET_FOLDER = "../../datasets/"
 
+experiment_parameters = {}
 
-def get_data():
+def get_data(dataset, scaling=False, pca_components=None, resampling=None):
+    
+    # set the global parameter tags for this exercise
+    experiment_parameters['dataset'] = dataset
+    experiment_parameters['scaled'] = 'yes' if scaling else 'no'
+    experiment_parameters['pca_components'] = 0 if pca_components is None else pca_components
+    experiment_parameters['resampling'] = "none" if resampling is None else resampling
+    
     # read a dataset
-    df = pd.read_pickle(DATASET_FOLDER + "dataset_09_pvtt_mean_cov_icov.pickle")
+    df = pd.read_pickle(DATASET_FOLDER + dataset)
 
     # get labels, a label encoder and features
     _, (y, le), X = tag_label_feature_split(df, label_format="encoded")
@@ -36,23 +47,39 @@ def get_data():
         X, y, test_size=0.2, random_state=1962, shuffle=True, stratify=y
     )
 
-    # scaler=StandardScaler()
+    # use scaling or pca as required
+    pipe=None
+    
+    if scaling and pca_components is not None:
+        pipe = Pipeline([('scaler', StandardScaler()),
+                         ('pca', PCA(random_state=1962, n_components=pca_components))])
+        
+    if scaling and pca_components is None:
+        pipe = Pipeline([('scaler', StandardScaler())])
+        
+    if not scaling and pca_components is not None:
+        pipe = Pipeline([('pca', PCA(random_state=1962, n_components=pca_components))])
+          
+    if pipe is not None:
+        X_train = pipe.fit_transform(X_train)    
 
-    # pca=KernelPCA(random_state=1962, n_components=200, n_jobs=-1)
-    pca = PCA(random_state=1962, n_components=0.95)
+    # resample as required
+    smt = None
+    
+    if resampling == 'SMOTE':
+        smt = SMOTE (random_state=1962, n_jobs=-1)
+        
+    if resampling == 'SMOTEENN':
+        enn = EditedNearestNeighbours(kind_sel='mode', n_neighbors=3, n_jobs=-1)
+        smt = SMOTEENN (random_state=1962, enn=enn)
 
-    # pipe = Pipeline([('scaler', scaler),
-    #                 ('pca', pca)
-    #                ])
-
-    # No scaling -- just PCA
-    pipe = pca
-
-    # run the preprocessing pipe
-    X_train_processed = X_train
-    X_test_processed = X_test
-
-    return X_train_processed, y_train
+    if resmpling == "SMOTETomek":
+        smt = SMOTETomek(random_state=1962, n_jobs=-1)
+        
+    if smt is not None:
+        X_train, y_train = smt.fit_resample(X_train, y_train)
+        
+    return X_train, y_train
 
 
 def xgboost_cv(
@@ -63,8 +90,12 @@ def xgboost_cv(
     max_depth,
     gamma,
     reg_alpha,
-    seed=None,
+    seed=1962,
 ):
+
+    arguments = locals()
+    arguments.pop("features")
+    arguments.pop("labels")
 
     estimator = XGBClassifier(
         learning_rate=learning_rate,
@@ -80,34 +111,23 @@ def xgboost_cv(
         seed=seed,
     )
 
-    scoring = [
-        "matthews_corrcoef",
-        "f1_macro",
-        "accuracy",
-        "precision_macro",
-        "recall_macro",
-    ]
+    scoring = ["matthews_corrcoef", "f1_macro", "accuracy"]
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         scores = cross_validate(
-            estimator, features, labels, scoring=scoring, cv=2, error_score=0
+            estimator, features, labels, scoring=scoring, cv=10, error_score=0, n_jobs=-1
         )
 
+    score_summary = {key.strip("test_"): value.mean() for key, value in scores.items()}
+
+    with open("bayesian_optimization_logs.json", "a") as outfile:
+        json.dump({**experiment_parameters, **arguments, **score_summary}, outfile)
+        outfile.write("\n")
+
     result = scores["test_matthews_corrcoef"].mean()
-
-    #with open("bayesian_optimization_test.json", "a") as outfile:
-    #    json.dump(
-    #        {key.strip("test_"): value.mean() for key, value in scores.items()}, outfile
-    #    )
-
+    
     return result
-
-    # cval = cross_val_score(
-    #    estimator, features, labels, scoring="matthews_corrcoef", cv=5, n_jobs=-1
-    # )
-    # return cval.mean()
-
 
 def optimize_xgboost(features, labels):
     def xgboost_crossval(learning_rate, n_estimators, max_depth, gamma, reg_alpha):
@@ -135,15 +155,27 @@ def optimize_xgboost(features, labels):
         verbose=2,
     )
 
-    logger = JSONLogger(path="bayesian_optimization_logs.json")
-    optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
     optimizer.maximize(n_iter=50, init_points=5)
-
     print("Final result:", optimizer.max)
 
 
 if __name__ == "__main__":
-    features, labels = get_data()
+    
+    dataset='dataset_01_mean.pickle'
+       
+    experiment_parameters['model'] = "XGBoostClassifier"
+    experiment_parameters['timestamp'] = int(time.time())
 
-    print("--- Optimizing XGBoost ---")
-    optimize_xgboost(features, labels)
+    arg_scaling = [False, True]
+    arg_pca = [None, .95]
+    arg_resampling = [None, 'SMOTE', 'SMOTEENN', 'SMOTETOMEK']
+    arg_dicts = [{'scaling': scaling, 'pca_components': pca_components, 'resampling': resampling}
+                 for scaling in arg_scaling
+                 for pca_components in arg_pca
+                 for resampling in arg_resampling]
+
+    for arg_dict in arg_dicts:
+        print("--- Optimizing XGBoost ---")
+        print (f"Dataset: {dataset} Arguments: {arg_dict}")
+        features, labels = get_data(dataset, **arg_dict)
+        optimize_xgboost(features, labels)
