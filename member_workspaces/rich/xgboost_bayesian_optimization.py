@@ -73,6 +73,11 @@ def xgboost_cv(
     )
     experiment_parameters["resampling"] = "none" if resampling is None else resampling
 
+    # build out the pipeline depending on the arguments received
+    # the final stage is the classifier itself
+    # including SMOTE related resampling in the pipeline keeps us from applying SMOTE to
+    # validation data, see https://imbalanced-learn.org/stable/common_pitfalls.html#data-leakage
+   
     steps = []
 
     if scaling:
