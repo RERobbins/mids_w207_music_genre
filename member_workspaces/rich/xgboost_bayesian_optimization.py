@@ -22,7 +22,6 @@ from imblearn.under_sampling import EditedNearestNeighbours
 sys.path.append("../../")
 
 from helpers.split import tag_label_feature_split
-from helpers.assess import make_classification_report, make_confusion_matrix
 
 DATASET_FOLDER = "../../datasets/"
 
