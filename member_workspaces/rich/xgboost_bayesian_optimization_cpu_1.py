@@ -22,6 +22,7 @@ from imblearn.under_sampling import EditedNearestNeighbours
 sys.path.append("../../")
 
 from helpers.split import tag_label_feature_split
+from helpers.assess import make_classification_report, make_confusion_matrix
 
 DATASET_FOLDER = "../../datasets/"
 
@@ -102,7 +103,7 @@ def xgboost_cv(
         gamma=gamma,
         reg_alpha=reg_alpha,
         use_label_encoder=False,
-        tree_method="gpu_hist",
+        tree_method="hist",
         sampling_method="gradient_based",
         objective="multi:softprob",
         eval_metric="mlogloss",
@@ -123,7 +124,7 @@ def xgboost_cv(
 
     score_summary = {key.strip("test_"): value.mean() for key, value in scores.items()}
 
-    with open("bayesian_optimization_logs.json", "a") as outfile:
+    with open("bayesian_optimization_cpu_1_logs.json", "a") as outfile:
         json.dump({**experiment_parameters, **arguments, **score_summary}, outfile)
         outfile.write("\n")
 
@@ -167,7 +168,7 @@ def optimize_xgboost(features, labels, scaling, pca_components, resampling):
 
 if __name__ == "__main__":
 
-    dataset = "dataset_01_mean.pickle"
+    dataset = "dataset_09_pvtt_mean_cov_icov.pickle"
 
     experiment_parameters["model"] = "XGBoostClassifier"
     experiment_parameters["dataset"] = dataset
