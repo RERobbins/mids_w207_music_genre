@@ -21,6 +21,11 @@ def experiment(
     result_filename=None,
     model_fit_call_fn=None,  # a custom fn to fall model.fit if the model type does not accept the default parameters
     postprocess_y_pred_fn=None,  # if the model type requires a certain transformation of y_pred before scoring, pass the transformation fn here
+    label_encoder=None,
+    X_train_std=None,
+    X_test_std=None,
+    y_train=None,
+    y_test=None
 ):
 
     name, dataset_name = resolve_experiment_names(name, model, dataset)
@@ -41,16 +46,21 @@ def experiment(
     else:
         df = dataset
 
-    _, (y, le), X = tag_label_feature_split(
-        df, label_format="encoded", samples_per_genre=samples_per_genre
-    )
+    # if precalculated splits are being passed, make sure they are all being passed
+    if X_train_std is not None or X_test_std is not None or y_train is not None or y_test is not None or label_encoder is not None:
+        if X_train_std is None or X_test_std is None or y_train is None or y_test is None or label_encoder is None:
+            raise Exception('If passing precalculated splits, all values must be provided')
+    else:
+        ## create the normalized train/test splits
+        _, (y, label_encoder), X = tag_label_feature_split(
+            df, label_format="encoded", samples_per_genre=samples_per_genre
+        )
 
-    X_train_std, X_test_std, y_train, y_test = make_train_test_split(
-        X, y, test_size=0.2, random_state=10, stratify=y, x_scaler="standard"
-    )
+        X_train_std, X_test_std, y_train, y_test = make_train_test_split(
+            X, y, test_size=0.2, random_state=10, stratify=y, x_scaler="standard"
+        )
 
     # if pca_components parameter is specified, we transform the features using it.
-    
     if pca_components is not None:
         print ("PCA pre_processing started")
         pca = PCA(n_components=pca_components)
@@ -60,7 +70,7 @@ def experiment(
         
     # if the model is actually a model factory function, then invoke to build model
     if callable(model):
-        model = model(X_train=X_train_std, y_train=y_train, le=le)
+        model = model(X_train=X_train_std, y_train=y_train, le=label_encoder)
         # can now generate the name of the model
         name, _ = resolve_experiment_names(name, model, dataset)
         print(f"\n\nCommencing Experiment: {name}\n")
@@ -78,7 +88,7 @@ def experiment(
                 for i, c in enumerate(
                     compute_class_weight(
                         class_weight="balanced",
-                        classes=le.transform(le.classes_),
+                        classes=label_encoder.transform(label_encoder.classes_),
                         y=y_train,
                     )
                 )
@@ -106,7 +116,7 @@ def experiment(
         model=model,
         x=X_train_std,
         digits=4,
-        label_encoder=le,
+        label_encoder=label_encoder,
         print_report=True,
         save_result=result_filename is not None,
         result_filename=result_filename,
@@ -122,7 +132,7 @@ def experiment(
         y_test,
         y_pred=y_test_pred,
         digits=4,
-        label_encoder=le,
+        label_encoder=label_encoder,
         print_report=True,
         save_result=result_filename is not None,
         result_filename=result_filename,
@@ -135,11 +145,19 @@ def experiment(
     make_confusion_matrix(
         y_test,
         y_pred=y_test_pred,
-        label_encoder=le,
+        label_encoder=label_encoder,
         title=f"{dataset_name} test (row normalized)",
     )
 
-    return
+    return {
+        'model':model,
+        'label_encoder':label_encoder,
+        'X_train_std':X_train_std,
+        'X_test_std':X_test_std,
+        'y_train': y_train,
+        'y_test': y_test,
+        'y_test_pred':y_test_pred
+    }
 
 
 def resolve_experiment_names(name, model, dataset_name):
