@@ -167,13 +167,13 @@ def optimize_xgboost(features, labels, scaling, pca_components, resampling):
 
 if __name__ == "__main__":
 
-    dataset = "dataset_01_mean.pickle"
+    dataset = "dataset_07_pvtt_mean_cov.pickle"
 
     experiment_parameters["model"] = "XGBoostClassifier"
     experiment_parameters["dataset"] = dataset
     experiment_parameters["timestamp"] = int(time.time())
 
-    arg_scaling = [False, True]
+    arg_scaling = [True]
     arg_pca = [None, 0.95]
     arg_resampling = [None, "SMOTE", "SMOTEENN", "SMOTETOMEK"]
     arg_dicts = [
