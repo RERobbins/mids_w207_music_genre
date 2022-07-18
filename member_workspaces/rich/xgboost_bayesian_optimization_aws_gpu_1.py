@@ -123,7 +123,7 @@ def xgboost_cv(
 
     score_summary = {key.strip("test_"): value.mean() for key, value in scores.items()}
 
-    with open("bayesian_optimization_aws_gpu_logs.json", "a") as outfile:
+    with open("bayesian_optimization_aws_gpu_1_logs.json", "a") as outfile:
         json.dump({**experiment_parameters, **arguments, **score_summary}, outfile)
         outfile.write("\n")
 
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     experiment_parameters["timestamp"] = int(time.time())
 
     arg_scaling = [True]
-    arg_pca = [None, 0.95]
+    arg_pca = [None]
     arg_resampling = [None, "SMOTE", "SMOTEENN", "SMOTETOMEK"]
     arg_dicts = [
         {"scaling": scaling, "pca_components": pca_components, "resampling": resampling}
