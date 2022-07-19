@@ -167,7 +167,7 @@ def optimize_xgboost(features, labels, scaling, pca_components, resampling):
 
 if __name__ == "__main__":
 
-    dataset = "dataset_07_pvtt_mean_cov.pickle"
+    dataset = "dataset_02_mean_cov.pickle"
 
     experiment_parameters["model"] = "XGBoostClassifier"
     experiment_parameters["dataset"] = dataset
