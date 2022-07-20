@@ -123,7 +123,7 @@ def xgboost_cv(
 
     score_summary = {key.strip("test_"): value.mean() for key, value in scores.items()}
 
-    with open("bayesian_optimization_aws_gpu_6_logs.json", "a") as outfile:
+    with open("bayesian_optimization_aws_gpu_6_dataset_02_logs.json", "a") as outfile:
         json.dump({**experiment_parameters, **arguments, **score_summary}, outfile)
         outfile.write("\n")
 
@@ -167,7 +167,7 @@ def optimize_xgboost(features, labels, scaling, pca_components, resampling):
 
 if __name__ == "__main__":
 
-    dataset = "dataset_06_pvtt_mean.pickle"
+    dataset = "dataset_02_mean_cov.pickle"
 
     experiment_parameters["model"] = "XGBoostClassifier"
     experiment_parameters["dataset"] = dataset
