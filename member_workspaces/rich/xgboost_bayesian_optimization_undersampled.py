@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.model_selection import cross_val_score, cross_validate
-from sklean.metrics import accuracy_score, balanced_accuracy_score, f1_score, 
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, matthews_corrcoef
 
 from xgboost import XGBClassifier
 from bayes_opt import BayesianOptimization
@@ -55,6 +55,12 @@ def get_data(dataset):
     X_val_scaled = scaler.transform(X_val)
     X_test_scaled = scaler.transform(X_test)
     
+    # apply principal component analysis
+    # pca = PCA(n_components=.95, random_state=1962)
+    # X_train_pca = pca.fit_transform(X_train_scaled)
+    # X_val_pca = pca.transform(X_val_scaled)
+    # X_test_pca = pca.transform(X_test_scaled)
+
     return X_train_scaled, X_val_scaled, X_test_scaled, y_train, y_val, y_test
 
 
@@ -102,8 +108,8 @@ def xgboost_cv(
         tree_method="gpu_hist",
         sampling_method="gradient_based",
         objective="multi:softprob",
-        eval_metric=["mlogloss", "auc"]
-        early_stopping_rounds=10,
+        eval_metric=["mlogloss", "auc"],
+        early_stopping_rounds=25,
         seed=seed,
     )
 
@@ -134,7 +140,7 @@ def optimize_xgboost(train_features, train_labels, eval_features, eval_labels):
         return xgboost_cv(
             train_features=train_features,
             train_labels=train_labels,
-            eval_feature=eval_features,
+            eval_features=eval_features,
             eval_labels=eval_labels,
             learning_rate=learning_rate,
             n_estimators=int(n_estimators),
@@ -156,7 +162,7 @@ def optimize_xgboost(train_features, train_labels, eval_features, eval_labels):
         verbose=2,
     )
 
-    optimizer.maximize(n_iter=50, init_points=5)
+    optimizer.maximize(n_iter=100, init_points=5)
     print("Final result:", optimizer.max)
 
 
@@ -169,6 +175,6 @@ if __name__ == "__main__":
     experiment_parameters["timestamp"] = int(time.time())
 
     print("--- Optimizing XGBoost ---")
-        print(f"Dataset: {dataset} Arguments")
-        train_features, eval_feature, test_features, train_labels, eval_labels, test_labels = get_data(dataset)
-        optimize_xgboost(train_features, train_labels, eval_features, eval_labels)
+    print(f"Dataset: {dataset} Arguments")
+    train_features, eval_features, test_features, train_labels, eval_labels, test_labels = get_data(dataset)
+    optimize_xgboost(train_features, train_labels, eval_features, eval_labels)
