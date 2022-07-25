@@ -4239,6 +4239,153 @@
             "decay": true,
             "decay_steps": 50000.0,
             "decay_rate": 0.96
+        },
+        {
+            "model": "CNN_melspec_partitioned_no_pop_3s_2",
+            "dataset": "dataset_10_melspecs_partitioned",
+            "phase": "train",
+            "result": {
+                "genre_blues": {
+                    "precision": 0.2070534699,
+                    "recall": 0.3888888889,
+                    "f1-score": 0.2702301411,
+                    "support": 468,
+                    "mcc": 0.2544215552
+                },
+                "genre_classical": {
+                    "precision": 0.8495049505,
+                    "recall": 0.8944275967,
+                    "f1-score": 0.8713876835,
+                    "support": 5276,
+                    "mcc": 0.8063103156
+                },
+                "genre_country": {
+                    "precision": 0.2661217075,
+                    "recall": 0.7163814181,
+                    "f1-score": 0.3880794702,
+                    "support": 409,
+                    "mcc": 0.4143531295
+                },
+                "genre_disco": {
+                    "precision": 0.2570694087,
+                    "recall": 0.8310249307,
+                    "f1-score": 0.3926701571,
+                    "support": 361,
+                    "mcc": 0.4429434685
+                },
+                "genre_hiphop": {
+                    "precision": 0.7924187726,
+                    "recall": 0.6194731891,
+                    "f1-score": 0.6953537487,
+                    "support": 2126,
+                    "mcc": 0.6615563914
+                },
+                "genre_jazz": {
+                    "precision": 0.5981380915,
+                    "recall": 0.4967783505,
+                    "f1-score": 0.5427666315,
+                    "support": 1552,
+                    "mcc": 0.5012494118
+                },
+                "genre_metal": {
+                    "precision": 0.4552652415,
+                    "recall": 0.6919374248,
+                    "f1-score": 0.5491881566,
+                    "support": 831,
+                    "mcc": 0.5321191953
+                },
+                "genre_reggae": {
+                    "precision": 0.6614872364,
+                    "recall": 0.6050761421,
+                    "f1-score": 0.6320254507,
+                    "support": 985,
+                    "mcc": 0.6097235201
+                },
+                "genre_rock": {
+                    "precision": 0.8105887723,
+                    "recall": 0.444,
+                    "f1-score": 0.5737360685,
+                    "support": 4000,
+                    "mcc": 0.515735736
+                },
+                "accuracy": {
+                    "f1-score": 0.6577336332,
+                    "support": 16008,
+                    "mcc": 0.5884943849
+                },
+                "macro avg": {
+                    "precision": 0.5441830723,
+                    "recall": 0.6319986601,
+                    "f1-score": 0.5461597231,
+                    "support": 16008
+                },
+                "weighted avg": {
+                    "precision": 0.7287464417,
+                    "recall": 0.6577336332,
+                    "f1-score": 0.6695994588,
+                    "support": 16008
+                }
+            },
+            "filters": [
+                16,
+                32,
+                64,
+                128
+            ],
+            "kernal_size": [
+                [
+                    3,
+                    3
+                ],
+                [
+                    3,
+                    3
+                ],
+                [
+                    3,
+                    3
+                ],
+                [
+                    3,
+                    3
+                ]
+            ],
+            "strides": [
+                1,
+                1
+            ],
+            "padding": "same",
+            "activation": "relu",
+            "pool_size": [
+                2,
+                2
+            ],
+            "dense_units": [],
+            "dropout_rate": [
+                0.3,
+                0.3,
+                0.3,
+                0.3
+            ],
+            "input_shape": [
+                null,
+                96,
+                68,
+                1
+            ],
+            "batch_normalization": true,
+            "batch_axis": [
+                3,
+                3,
+                -1,
+                -1
+            ],
+            "last_activation": "softmax",
+            "learning_rate": 0.00055,
+            "epoch": 100,
+            "decay": true,
+            "decay_steps": 50000.0,
+            "decay_rate": 0.96
         }
     ]
 }
