@@ -29,7 +29,7 @@ class ReadFilesIntoDataframe():
 
 
     def read_mtg_jamendo_files(self):
-        folder = os.path.join(Path().absolute().parents[1], 'datasets', 'mtg_jamendo')
+        folder = os.path.join(Path().absolute().parents[0], 'datasets', 'mtg_jamendo')
 
         files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
         files = [os.path.join(folder, f) for f in files if re.search('mtg_jamendo_genre_features_part_[0-9]+\.pickle\.bz2$', f)]
