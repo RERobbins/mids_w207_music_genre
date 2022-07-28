@@ -15,6 +15,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, m
 from xgboost import XGBClassifier
 from bayes_opt import BayesianOptimization
 
+from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline
 from imblearn.under_sampling import RandomUnderSampler
 
@@ -51,10 +52,11 @@ def get_data(dataset):
     X_train_scaled = scaler.fit_transform(X_train)
     X_val_scaled = scaler.transform(X_val)
     X_test_scaled = scaler.transform(X_test)
+        
+    # resample the training set to create balance using SMOTE
+    smt = SMOTE(random_state=1962)
+    X_train_res, y_train_res = smt.fit_resample(X_train_scaled, y_train)
     
-    # under sample the train set to create balance
-    rus = RandomUnderSampler(random_state=1962)
-    X_train_res, y_train_res = rus.fit_resample(X_train_scaled, y_train)
     
     return X_train_res, X_val_scaled, X_test_scaled, y_train_res, y_val, y_test
 
@@ -85,7 +87,7 @@ def xgboost_cv(
     
     experiment_parameters["scaled"] = "yes"
     experiment_parameters["pca_components"] = 0
-    experiment_parameters["resampling"] = "under"
+    experiment_parameters["resampling"] = "SMOTE"
     
 
     # build out the pipeline depending on the arguments received
