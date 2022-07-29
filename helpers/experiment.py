@@ -77,22 +77,24 @@ def experiment(
 
     fit_history = None
 
+    class_weight={
+        i: c
+        for i, c in enumerate(
+            compute_class_weight(
+                class_weight="balanced",
+                classes=label_encoder.transform(label_encoder.classes_),
+                y=y_train,
+            )
+        )
+    }
+
     # if the model requires a custom invokation to the fit method, call it here
     if model_fit_call_fn is not None:
         fit_history = model_fit_call_fn(
             model=model,
             X_train=X_train_std,
             y_train=y_train,
-            class_weight={
-                i: c
-                for i, c in enumerate(
-                    compute_class_weight(
-                        class_weight="balanced",
-                        classes=label_encoder.transform(label_encoder.classes_),
-                        y=y_train,
-                    )
-                )
-            },
+            class_weight=class_weight,
         )
     # otherwise use the default fit method
     else:
@@ -156,7 +158,8 @@ def experiment(
         'X_test_std':X_test_std,
         'y_train': y_train,
         'y_test': y_test,
-        'y_test_pred':y_test_pred
+        'y_test_pred':y_test_pred,
+        'class_weight':class_weight
     }
 
 
