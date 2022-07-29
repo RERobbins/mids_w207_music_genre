@@ -35,16 +35,13 @@ def get_data(dataset):
     # get labels, a label encoder and features
     _, (y, le), X = tag_label_feature_split(df, label_format="encoded")
 
-    # undersample to create balanced dataset
-    rus = RandomUnderSampler(random_state=1962)
-    X_res, y_res = rus.fit_resample(X, y)
     
     # split into train/validation and test datasets
     X_train_val, X_test, y_train_val, y_test = train_test_split(
-        X_res, y_res, test_size=0.2, shuffle=True, stratify=y_res, random_state=1962
+        X, y, test_size=0.2, shuffle=True, stratify=y, random_state=1962
     )
     
-    # split training/validation into training and validation datasets
+    # split train/validation into train and test datasets
     X_train, X_val, y_train, y_val = train_test_split(
         X_train_val, y_train_val, test_size=0.25, shuffle=True, stratify=y_train_val, random_state=1962
     )
@@ -55,13 +52,11 @@ def get_data(dataset):
     X_val_scaled = scaler.transform(X_val)
     X_test_scaled = scaler.transform(X_test)
     
-    # apply principal component analysis
-    # pca = PCA(n_components=.95, random_state=1962)
-    # X_train_pca = pca.fit_transform(X_train_scaled)
-    # X_val_pca = pca.transform(X_val_scaled)
-    # X_test_pca = pca.transform(X_test_scaled)
-
-    return X_train_scaled, X_val_scaled, X_test_scaled, y_train, y_val, y_test
+    # under sample the train set to create balance
+    rus = RandomUnderSampler(random_state=1962)
+    X_train_res, y_train_res = rus.fit_resample(X_train_scaled, y_train)
+    
+    return X_train_res, X_val_scaled, X_test_scaled, y_train_res, y_val, y_test
 
 
 def xgboost_cv(
@@ -90,7 +85,7 @@ def xgboost_cv(
     
     experiment_parameters["scaled"] = "yes"
     experiment_parameters["pca_components"] = 0
-    experiment_parameters["resampling"] = "none"
+    experiment_parameters["resampling"] = "under"
     
 
     # build out the pipeline depending on the arguments received
