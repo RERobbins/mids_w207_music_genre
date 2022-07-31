@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef
-from sklearn.utils.class_weight import compute_sample_weight
-
+from sklearn.utils.class_weight import compute_sample_weight,compute_class_weight
+from tensorflow.keras import backend as K
 from helpers.save import results
 
 
@@ -23,7 +23,7 @@ def make_confusion_matrix(
     ax=None,
     digits=3,
     cbar=True,
-    fontsize=8,
+    fontsize=10,
     square=True
 ):
 
@@ -281,5 +281,25 @@ def make_classification_report(
 
     if print_report:
         print(report_string)
+        
+    return deferred_cr
 
+def get_f1(y_true, y_pred):  # taken from old keras source code
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    recall = true_positives / (possible_positives + K.epsilon())
+    f1_val = 2 * (precision * recall) / (precision + recall + K.epsilon())
+    return f1_val
     return deferred_cr if output_dict else report_string
+
+def make_class_weight_dict(y,le):
+    return {
+        i: c
+        for i, c in enumerate(
+            compute_class_weight(
+                class_weight="balanced", classes=le.transform(le.classes_), y=y
+            )
+        )
+    }
