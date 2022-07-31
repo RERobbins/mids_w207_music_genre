@@ -20,6 +20,11 @@ def make_confusion_matrix(
     label_encoder=None,  # a label encoder for the to automatically get the label names
     figsize=(9, 9),  # size of the heatmap displayed
     title=None,  # printed title of the heatmap
+    ax=None,
+    digits=3,
+    cbar=True,
+    fontsize=8,
+    square=True
 ):
 
     # resolve polymorphisms / optional values
@@ -40,22 +45,34 @@ def make_confusion_matrix(
 
     # print a heatmap
     if print_heatmap:
-        plt.figure(figsize=figsize, facecolor="white")
+        if ax is None:
+          plt.figure(figsize=figsize, facecolor="white")
         sns.heatmap(
             cm,
             annot=True,
-            fmt=".3f",
+            fmt=f".{digits}f",
             linewidths=0.5,
-            square=True,
+            square=square,
             cmap="Blues_r",
             xticklabels=label_names,
             yticklabels=label_names,
+            ax=ax,
+            cbar=cbar,
+            annot_kws={"fontsize":fontsize}
         )
-        plt.ylabel("Actual Label")
-        plt.xlabel("Predicted Label")
+        if ax:
+            ax.set(ylabel="Actual Label")
+            ax.set(xlabel="Predicted Label")
+        else:
+            plt.ylabel("Actual Label")
+            plt.xlabel("Predicted Label")
         if title:
-            plt.title(title)
-        plt.show()
+            if ax:
+                ax.set(title=title)
+            else:
+                plt.title(title)
+        if ax is None:
+            plt.show()
 
     # return the 2D confusion matrix array
     return cm
