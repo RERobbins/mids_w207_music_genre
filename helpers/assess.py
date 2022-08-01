@@ -363,7 +363,7 @@ def make_notebook_undersampling_smote_classification_summary(
     axs[0][0].plot(undersample_validation_results['mlogloss'], label='validate')
     axs[0][0].set(title='Undersample Training')
     axs[0][0].set(xlabel='epoch')
-    axs[0][0].set(label='mlogloss')
+    axs[0][0].set(ylabel='mlogloss')
     axs[0][0].legend()
     
     axs[0][0].set_ylim([0, 2.25])
@@ -373,21 +373,21 @@ def make_notebook_undersampling_smote_classification_summary(
     axs[1][0].plot(undersample_validation_results['auc'], label='validate')
     axs[1][0].set(title='Undersample Evaluation')
     axs[1][0].set(xlabel='epoch')
-    axs[1][0].set(label='ROC AUC')
+    axs[1][0].set(ylabel='ROC AUC')
     axs[1][0].legend()
 
     axs[0][1].plot(smote_train_results['mlogloss'], label='train')
     axs[0][1].plot(smote_validation_results['mlogloss'], label='validate')
     axs[0][1].set(title='SMOTE Training')
     axs[0][1].set(xlabel='epoch')
-    axs[0][1].set(label='mlogloss')
+    axs[0][1].set(ylabel='mlogloss')
     axs[0][1].legend()
 
     axs[1][1].plot(smote_train_results['auc'], label='train')
     axs[1][1].plot(smote_validation_results['auc'], label='validate')
     axs[1][1].set(title='SMOTE Evaluation')
     axs[1][1].set(xlabel='epoch')
-    axs[1][1].set(label='ROC AUC')
+    axs[1][1].set(ylabel='ROC AUC')
     axs[1][1].legend()
     
     axs[1][0].set_ylim([0.8, 1.005])
