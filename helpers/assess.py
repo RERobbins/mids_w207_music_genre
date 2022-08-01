@@ -327,6 +327,99 @@ def make_notebook_classification_summary(y_true,y_pred,le=None,title=None):
     make_confusion_matrix(y_true, y_pred, label_encoder=le, ax=axs[1],digits=2)
 
     plt.show()
+    
+def make_notebook_undersampling_smote_classification_summary(
+    y_true_test,
+    undersample_classifier_y_pred_test,
+    smote_classifier_y_pred_test,
+    undersample_train_results,
+    undersample_validation_results,
+    smote_train_results,
+    smote_validation_results,
+    le=None,title=None
+):
+    
+    undersample_cr = make_classification_report(
+        y_true_test,
+        undersample_classifier_y_pred_test,
+        label_encoder=le,
+        print_report=False,
+        output_dict=True
+    )['text_summary']
+    
+    smote_cr = make_classification_report(
+        y_true_test,
+        smote_classifier_y_pred_test,
+        label_encoder=le,
+        print_report=False,
+        output_dict=True
+    )['text_summary']
+
+    f, axs = plt.subplots(4, 2, figsize=(14, 22))
+    f.set(facecolor='white')
+    
+    
+    axs[0][0].plot(undersample_train_results['mlogloss'], label='train')
+    axs[0][0].plot(undersample_validation_results['mlogloss'], label='validate')
+    axs[0][0].set(title='Undersample Training')
+    axs[0][0].set(xlabel='epoch')
+    axs[0][0].set(label='mlogloss')
+    axs[0][0].legend()
+    
+    axs[0][0].set_ylim([0, 2.25])
+    axs[0][1].set_ylim([0, 2.25])
+
+    axs[1][0].plot(undersample_train_results['auc'], label='train')
+    axs[1][0].plot(undersample_validation_results['auc'], label='validate')
+    axs[1][0].set(title='Undersample Evaluation')
+    axs[1][0].set(xlabel='epoch')
+    axs[1][0].set(label='ROC AUC')
+    axs[1][0].legend()
+
+    axs[0][1].plot(smote_train_results['mlogloss'], label='train')
+    axs[0][1].plot(smote_validation_results['mlogloss'], label='validate')
+    axs[0][1].set(title='SMOTE Training')
+    axs[0][1].set(xlabel='epoch')
+    axs[0][1].set(label='mlogloss')
+    axs[0][1].legend()
+
+    axs[1][1].plot(smote_train_results['auc'], label='train')
+    axs[1][1].plot(smote_validation_results['auc'], label='validate')
+    axs[1][1].set(title='SMOTE Evaluation')
+    axs[1][1].set(xlabel='epoch')
+    axs[1][1].set(label='ROC AUC')
+    axs[1][1].legend()
+    
+    axs[1][0].set_ylim([0.8, 1.005])
+    axs[1][1].set_ylim([0.8, 1.005])
+    
+    for i in range(2):
+        axs[2,i].set(facecolor='white')
+        axs[2,i].set_yticklabels([])
+        axs[2,i].set_xticklabels([])
+        axs[2,i].text(
+            0.90, 0.90,
+            undersample_cr if i == 0 else smote_cr,
+            family='monospace',
+            horizontalalignment='right',
+            verticalalignment='top',
+            # transform=axs[1].transAxes
+        )
+        axs[2,i].set_title(('Undersample' if i == 0 else 'SMOTE')+' Classification Report',pad=-14)
+    
+    make_confusion_matrix(y_true_test, undersample_classifier_y_pred_test, label_encoder=le,
+                          ax=axs[3][0],
+                          digits=2,cbar=True,fontsize=8,title="Undersample Confusion Matrix",square=True)
+    make_confusion_matrix(y_true_test, smote_classifier_y_pred_test, label_encoder=le,
+                          ax=axs[3][1],
+                          digits=2,cbar=True,fontsize=8,title="SMOTE Confusion Matrix",square=True)
+    
+    if title is not None:
+        plt.suptitle(title,color='black',size=18)
+
+    #make_confusion_matrix(y_true, y_pred, label_encoder=le, ax=axs[1],digits=2)
+
+    plt.show()
 
 
 
