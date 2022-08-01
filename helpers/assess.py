@@ -229,11 +229,11 @@ def make_classification_report(
                 cr[rk][mk] = mv - compare_to[rk][mk]
 
     # return dictionary as-is if requested and no string parsing is necessary for print
-    deferred_cr = None
-    if output_dict and print_report == False:
-        return cr
-    else:
-        deferred_cr = cr.copy()
+    # deferred_cr = None
+    #if output_dict and print_report == False:
+    #    return cr
+    #else:
+    deferred_cr = cr.copy()
 
     # parse a table to a string
 
@@ -281,7 +281,9 @@ def make_classification_report(
 
     if print_report:
         print(report_string)
-        
+    
+    deferred_cr['text_summary'] = report_string
+
     return deferred_cr
 
 def get_f1(y_true, y_pred):  # taken from old keras source code
@@ -303,3 +305,35 @@ def make_class_weight_dict(y,le):
             )
         )
     }
+
+def make_notebook_classification_summary(y_true,y_pred,le=None,title=None):
+    
+    cr = make_classification_report(y_true, y_pred, label_encoder=le, print_report=False,output_dict=True)
+
+    f, axs = plt.subplots(1, 2, figsize=(14, 6))
+    f.set(facecolor='white')
+    axs[0].set(facecolor='white')
+    axs[0].set_yticklabels([])
+    axs[0].set_xticklabels([])
+    axs[0].text(
+        0.90, 0.90, cr['text_summary'], family='monospace',
+        horizontalalignment='right',
+        verticalalignment='top',
+        # transform=axs[1].transAxes
+    )
+    if title is not None:
+        plt.suptitle(title,color='black',size=18)
+
+    make_confusion_matrix(y_true, y_pred, label_encoder=le, ax=axs[1],digits=2)
+
+    plt.show()
+
+
+
+
+
+
+
+
+
+
